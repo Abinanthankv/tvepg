@@ -192,7 +192,8 @@ function getKeyByValue(object, value) {
   return Object.keys(object).find((key) => object[key] === value);
 }
 async function apichannels() {
-
+ console.log(foundlanguage)
+ console.log(foundgenere)
   return fetch(
     `https://jiotvapi.cdn.jio.com/apis/v3.0/getMobileChannelList/get/?langId=6&devicetype=phone&os=android&usertype=JIO&version=343`
   )
@@ -200,6 +201,7 @@ async function apichannels() {
     .then((data) => {
       if (foundgenere == null && foundlanguage == null) {
         const Array2 = data.result
+
           .map((channels) => ({
             id: channels.channel_id,
             name: channels.channel_name,
@@ -255,7 +257,7 @@ function filtereditemlist() {
     if (data) {
       if(data.length===0)
       {
-        console.log(data.length);
+      //  console.log(data.length);
         channelList.innerHTML = `<div class="container">
         <h2 class="error-title">Sorry no channel found</h2>
             <img src=${"https://github.com/Abinanthankv/tv.m3u/blob/main/undraw_monitor_iqpq.svg?raw=true"}>    
@@ -263,7 +265,7 @@ function filtereditemlist() {
       }
       
       data.forEach((item) => {
-         console.log(item.id);
+        // console.log(item.id);
         const listItem = document.createElement("li");
         listItem.id = "channelIDD";
         const scrollchannelid = document.createElement("li");
