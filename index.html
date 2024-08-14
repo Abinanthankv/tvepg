@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Live Tv</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/video.js/dist/video.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/video.js/dist/video-js.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-hls.js@3.2.0/dist/videojs-contrib-hlsjs.min.js"></script>
+    <!--script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@4.1.0/dist/videojs-contrib-quality-levels.min.js"></script-->
+    <script src="https://cdn.jsdelivr.net/npm/@videojs/http-streaming@3.10.0/dist/videojs-http-streaming.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs-http-source-selector@1.1.6/dist/videojs-http-source-selector.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/videojs-http-source-selector@1.1.6/dist/videojs-http-source-selector.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-playbackrate@dist/videojs-contrib-playbackrate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs-seek-buttons@3.0.1/dist/videojs-seek-buttons.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs@latest/dist/video-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-live@latest/dist/video-js.contrib.live.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs-hotkeys@0.2.28/videojs.hotkeys.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script src="path/to/videojs-contrib-buttons.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/jb-videojs-hls-quality-selector@2.0.2/dist/videojs-hls-quality-selector.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jb-videojs-hls-quality-selector@2.0.2/dist/jb-videojs-hls-quality-selector.min.js"></script>
+  </head>
+  <body id="body">
+    
+      <div id="video-details">
+        <div id="video-container">
+          <video id="myVideo" class="video-js" controls></video>
+
+          <div id="channel-info">
+            <div class="info">
+              <img id="channel-logo" src="" />
+              <span id="channel-name"></span>
+            </div>
+            <div id="your-scrollable-div">
+              <div id="nowplaying-info" class="info-item">
+                <span id="nowplayingtag">Now Playing: </span>
+                <span id="current-playing"></span>
+
+                <p id="current-playing-info"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="toggle">
+        <div id="channel-container">
+          <select id="language-filter">
+            <option value="all">All language</option>
+          </select>
+          <select id="channel-filter">
+            <option value="all">All category</option>
+          </select>
+          <!--button id="toggle-HD">HD/SD</button-->
+        </div>
+        <div>
+         <!--button id="toggle-HD">HD/SD</button-->
+         <button id="toggle-list-size">Show EPG</button>
+         </div>
+      </div>
+    
+    
+    <div id="epginfo-scroll">
+      
+      <div id="epg-scroll">
+        
+        <ul id="epg-time"></ul>
+        
+      </div> 
+      
+      <div id="channel-list-container">
+        <div id="vertical-line"></div>
+        
+        <ul id="scroll-channel" class="channel-toggle"></ul> 
+        <ul id="channel-list" class="logo-list"></ul>
+        <!--ul id="epg-list" class="epg-listitem"></ul-->
+      </div>
+    </div>
+
+    <button id="scroll-to-top" class="fab">
+      <span class="material-symbols-outlined"> keyboard_double_arrow_up </span>
+    </button>
+    <script src="script.js"></script>
+  </body>
+</html>

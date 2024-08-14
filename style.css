@@ -1,0 +1,519 @@
+
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  background-color: seashell;
+ 
+}
+
+/* Filter Section */
+#channel-filter {
+  /*width: 150px;
+  padding: 5px;*/
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+#language-filter {
+  width: 150px;
+  padding: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+/*#channel-list {
+  overflow-y: scroll; /* Enable scrolling for the channel list 
+  scrollbar-width: none; /* Hide the default scrollbar (works in Chrome, Safari, and Opera) 
+  -ms-overflow-style: none; /* Hide the default scrollbar (works in Internet Explorer, Edge) 
+}*/
+
+/* Channel List Section */
+
+.logo-list  li  {
+ /* margin: 10px; /* Add space between list items */
+ /* padding-top: 10px;*/
+ display: flex;
+  justify-content:start;
+ 
+  align-items: center;
+  width: 220px;
+ /* background-color: #f1f1f1; */
+  /*flex-wrap: wrap;*/
+  text-align: center; /* Center the content of each item */
+  font-family: Arial, sans-serif; /* Set font family */
+   /* Set font size */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  /* Light gray background for list items */
+  color: black; /* Text color for list items */
+ /* border-radius: 5px; /* Add rounded corners for a softer look */
+  /* Add box shadow for a subtle hover effect */
+ /*box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out; /* Add a smooth hover transition */
+}
+
+.channel-toggle {
+  flex: 0 0 1%;
+  display: flex;
+  flex-wrap: wrap;
+  width: fit-content;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.channel-toggle li {
+  margin: 10px;
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: top;
+  width: 220px;
+  background-color: #f1f1f1;
+  flex-wrap: wrap;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  color: black;
+  border-radius: 5px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+.channel-toggle img{
+  height: 100px;
+  width: 100px;
+}
+/* Video Player Section */
+#myVideo {
+  width: 100%;
+  /*height: 300px;*/
+  height: 55vh; 
+  margin: 0;
+ 
+}
+
+#nowplaying-span{
+  display: block;
+}
+
+
+
+#toggle-HD{
+  height: 50px;
+  width: 120px;
+  text-align: center;
+  border-style: solid;
+  border-radius: 20px;
+}
+
+#channel-logo{
+  margin: 0;
+  padding: 0;
+  border: none;
+  width: 140px;
+  height: 140px;
+
+}
+#nowplaying-info{
+
+  align-items: center;
+  
+}
+#upcoming-info{
+  display: none;
+  padding: 0;
+  margin: 0 ;
+  align-items: center;
+  flex-wrap: wrap;
+  display: flex;
+  gap: 0;
+  
+}
+#nowplayingtag,#upcoming,#channel-logo{
+  display: none;
+}
+#nowplayingtag,#upcoming{
+  font-weight: 30px;
+  color: greenyellow;
+}
+#toggle-list-size{
+  height: 50px;
+  width:120px;
+  margin: 10px;
+  border-radius: 20px;
+  height: 50px;
+  text-align: center;
+  border-style: solid;
+}
+.collapsed {
+  background: #333333; 
+}
+.collapsed li{
+  height: 200px;
+  width:200px;
+  display: flex;
+  font-size: 25px;
+  justify-content: space-between;
+  background-color: antiquewhite;
+
+}
+.collapsed img{
+  width: inherit;
+}
+
+#upcoming-info p{
+  display: flex;
+  top: 0;
+  font-style: italic;
+  gap: 0;
+}
+
+#your-scrollable-div{
+  /* Set a height for the element to create scrollable content */
+  height: 130px; /* Adjust as needed */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 10px;
+  background-color: transparent;
+  color: whitesmoke;
+}
+
+#video-details {
+ position: sticky; /* Enable sticky positioning */
+  display: flex;
+  top: 0; /* Stick to the top of the viewport */
+  width: 100%; /* Maintain full width */
+  background-color: #fff; /* Optional background color for visibility */
+  padding: 0px; /* Optional padding for aesthetics */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
+  z-index: 100; /* Ensure video details stay above other elements */
+}
+
+#channel-info{
+  display: none;
+  font-size: 25px;
+  
+  padding: auto;
+  background-color: #333333;
+  color: whitesmoke;
+  flex-direction: row;
+  /*display: flex;*/
+  /*align-items: center;*/
+}
+
+#toggle{
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  background-color: #333333;
+  z-index: 25;
+  
+
+}
+#video-container{
+  display: none;
+  
+}
+#scrollchannelID {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.info{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: 130px;
+  padding: 10px;
+}
+#channel-container{
+ flex: 0 0 25%;
+display: flex; /* Make the list a flex container */
+
+   /* Adjust width as needed */
+  /*  margin: 0 auto; /* Center the list horizontally */
+    list-style: none; /* Remove default bullet points */
+    padding: 0; /* Remove default padding */
+}
+/*#channel-list-container{
+  
+  display: flex;
+ /* overflow-x: scroll;
+  position: relative;
+  width: 1000%;
+ 
+  
+}*/
+#channelID{
+  overflow-x: visible;
+}
+.myClass{
+  display: flex;
+}
+
+#epgID{
+  display: flex;
+  width: 100px;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+
+}
+#epg-time li{
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  width: 220px;
+  background-color: #f1f1f1;
+  flex-wrap: wrap;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  color: black;
+  border-radius: 5px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+#epgtime,#livetime,#timeline,#two{
+  padding: 5px;
+  padding-left: 312.5px;
+
+}
+#current-playing,#current-playing-info{
+  font-size: 25px;
+  padding: 0;
+  margin: 0;
+}
+
+#language-filter,#channel-filter{
+  display: flex;
+flex-wrap: wrap; /* Allow items to wrap if overflow */
+list-style: none; /* Remove default list style */
+margin: 0; /* Remove default margin */
+padding-left: 0;
+height:50px;
+/*text-align: center;*/
+border-style: solid;
+border-radius: 20px;
+}
+
+
+#language-filter option  ,#channel-filter option {
+  margin: 5px; /* Add space between list items */
+  padding: 10px 15px; /* Add padding for content */
+  border: 1px solid #ccc; /* Add a thin border */
+  border-radius: 5px; /* Add rounded corners */
+  background-color: #fff; /* White background */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  font-size: 14px; /* Set font size for list items */
+}
+#video-container {
+  flex:1;
+}
+#channel-container {
+  display: flex;
+ /* background-color: #f0f0f0;*/
+  padding: 10px;
+}
+
+.logo-list {
+  flex:0 0 1%;
+ display: flex;
+ 
+  flex-wrap: wrap;
+  align-items: flex-start;
+ /* width: fit-content;*/
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.myClass{
+  display:flex;
+ pointer-events: none;
+  list-style: none;
+ margin-left: 55px;
+ height: 85px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+}
+#vertical-line {
+  width: 1px; /* Adjust the width of the line as needed */
+  height: 100%; /* Make the line span the full height of its parent container */
+  background-color: rgb(128, 219, 68); /* Set the color of the line */
+  position: fixed;
+
+  z-index: 20;
+  overflow: auto;
+  top: 0;
+}
+.myClass li{
+  /*margin: 10px; /* Add space between list items */
+ /* padding-top: 10px;*/
+ display: flex;
+  justify-content:start;
+ 
+  align-items: center;
+  width: 220px;
+ /* background-color: #f1f1f1; */
+  /*flex-wrap: wrap;*/
+  text-align: center; /* Center the content of each item */
+  font-family: Arial, sans-serif; /* Set font family */
+   /* Set font size */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  /* Light gray background for list items */
+  /* Text color for list items *
+  /* Add box shadow for a subtle hover effect */
+  /*box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out; /* Add a smooth hover transition */
+  border-radius: 70PX !important;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out;
+  padding-left: 20px;
+
+}
+
+#epg-scroll{
+  display: flex;
+  height: 25px;
+  font-size: 20px ;
+  position:sticky;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+}
+/*#hello{
+  overflow-x: scroll;
+}*/
+/*#epginfo-scroll{
+  overflow-x:scroll;
+  position:sticky;
+  top:0;
+}*/
+/*#epg-list li {
+  margin: 10px;
+  padding: 10px;
+  
+}*/
+#scroll-channel{
+  position: sticky;
+  z-index: 100;
+  left: 5px;
+  margin: 0;
+  
+}
+.scroll-list li{
+  display: flex;
+  justify-content:start;
+ 
+  align-items: center;
+  width: 220px;
+ /* background-color: #f1f1f1; */
+  /*flex-wrap: wrap;*/
+  text-align: center; /* Center the content of each item */
+  font-family: Arial, sans-serif; /* Set font family */
+   /* Set font size */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  /* Light gray background for list items */
+  color: black; /* Text color for list items */
+  border-radius: 5px; /* Add rounded corners for a softer look */
+  /* Add box shadow for a subtle hover effect */
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out; /* Add a smooth hover transition */
+ list-style: none;
+ background-color: antiquewhite;
+}
+.logo-list img{
+  width: 100px;
+  height: 100px;
+}
+.scroll-list img{
+  width: 100px;
+  height: 100px;
+}
+#epg-time {
+  display: none;
+  padding: 0;
+  margin: 0%;
+  font-size: 20px ;
+  position: sticky;
+  display: flex;
+ /* top:71.5vh;*/
+  width: 100%;
+  padding: 0px;
+  z-index: 10;
+}
+
+ 
+
+.vjs-control-bar{
+  height: auto;
+  font-size: 16px !important;
+}
+
+/*unwanted codes
+.vjs-control-bar,.vjs-current-time ,.vjs-time-control, .vjs-control,.vjs-progress-control, .vjs-control,.vjs-time-control,
+.vjs-time-divider,.vjs-play-control,.vjs-control,.vjs-button,.vjs-playing,.vjs-progress-holder,.vjs-slider,.vjs-slider-horizontal,
+.vjs-duration,.vjs-time-control,.vjs-control,.vjs-current-time-display{
+  display: block;
+}*/
+/*.vjs-remaining-time-display{
+  display: block;
+  color: wheat;
+  position: absolute;
+  top: 0;
+  margin: 0;
+  font-size: 15px;
+  
+}*/
+
+/*.vjs-current-time,.vjs-time-control,.vjs-control,.vjs-current-time-display,.vjs-big-play-button{
+  display: block;
+}*/
+.fab {
+  display:none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color:whitesmoke; /* Green color */
+  color: black;
+  padding: 15px;
+  border-radius: 50%;
+  opacity: 0.8; /* Semi-transparent */
+  transition: opacity 0.3s ease-in-out;
+}
+.fab:hover {
+  opacity: 1; /* Fully opaque on hover */
+}
+
+
+/*Animated styles*/
+.container {
+  margin: 100px auto;
+  width: 400px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.container img{
+  height: 400px;
+  width: 400px;
+}
+.error-title {
+  animation: shake 0.5s infinite;
+}
+@keyframes shake {
+  0% { transform: translateX(0px); }
+  10% { transform: translateX(-10px); }
+  20% { transform: translateX(10px); }
+  30% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  50% { transform: translateX(0px); }
+  100% { transform: translateX(0px); }
+}
