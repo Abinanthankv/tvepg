@@ -332,7 +332,7 @@ border-radius: 20px;
  pointer-events: none;
   list-style: none;
  margin-left: 55px;
- /*height: 85px;*/
+ height: 85px;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -474,7 +474,7 @@ border-radius: 20px;
   display: block;
 }*/
 .video-js .vjs-time-control{display: block;}
-    .video-js .vjs-remaining-time{display: block;}
+  
 .fab {
   display:none;
   position: fixed;

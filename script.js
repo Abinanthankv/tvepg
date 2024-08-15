@@ -627,10 +627,7 @@ function getEPGDataByApi(channelId) {
       data.epg.forEach((item) => {
         if (item.showtime <= currentTime && currentTime < item.endtime) {
           curr.textContent = item.showname;
-          curr.insertAdjacentHTML(
-            "beforeend",
-            `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`}>`
-          );
+         // curr.insertAdjacentHTML( "beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`}>`);
 
           var duration = getRemainingTime(currentTime, item.endtime);
 
@@ -650,10 +647,7 @@ function getEPGDataByApi(channelId) {
           future.id = "timeshift";
           future.innerHTML = "";
           future.textContent = item.showname;
-          future.insertAdjacentHTML(
-            "beforeend",
-            `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`}>`
-          );
+         // future.insertAdjacentHTML("beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`}>` );
 
           future.style.width = item.duration * 13.4 + "px";
           epgul.appendChild(future);
