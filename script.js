@@ -6,6 +6,7 @@ var player = videojs("myVideo", {
   enableSmoothSeeking: true,
   controls: true,
   controlBar: {
+   
     skipButtons: {
       forward: 5,
       backward: 10,
@@ -42,6 +43,7 @@ const verticalline = document.getElementById("vertical-line");
 const epgScroll = document.getElementById("channel-list-container");
 const toggleButton = document.getElementById("toggle-list-size");
 const timecontrol = document.querySelector(".vjs-time-control");
+const showTime=document.getElementById("show-time");
 let activeChannel;
 let filteredData;
 let isShowHD = false;
@@ -264,28 +266,28 @@ function checkAndCallFunction() {
   nowtimewidth();
   // filtereditemlist()
   if (minutes === 30||minutes===0) {
-    filtereditemlist();
+   // filtereditemlist();
   if(activeChannel!=null)
   {
-   getduration(activeChannel).then((data) => {
+  /* getduration(activeChannel).then((data) => {
     if (data) {
-      player.duration = function () {
-        return remaining1 * 60; // the amount of seconds of video
-      };
-      console.log("hell yeah")
-      var timeDividerSpan = player.controlBar
+     /* player.duration = function () {
+        return duration1 * 60; // the amount of seconds of video
+      };*/
+     
+    /*  var timeDividerSpan = player.controlBar
         .getChild("timeDivider")
         .el()
         .querySelector("span");
       timeDividerSpan.textContent =
-        showtimestart.toString() + "/" + showtimeend.toString();
+        showtimestart.toString() + "/" + showtimeend.toString();*/
 
       /* player.on('loadedmetadata', function() {
                   var duration1 = player.duration;
                   console.log(duration1);
-                });*/
+                });
     }
-  });
+  });*/
 }
   }
 }
@@ -391,20 +393,21 @@ function filtereditemlist() {
             });
             getduration(item.id).then((data) => {
               if (data) {
-                player.duration = function () {
-                  return remaining1 * 60; // the amount of seconds of video
-                };
                 var timeDividerSpan = player.controlBar
                   .getChild("timeDivider")
                   .el()
                   .querySelector("span");
                 timeDividerSpan.textContent =
                   showtimestart.toString() + "/" + showtimeend.toString();
+                  showTime.innerHTML='⌛'+showtimestart.toString() + " / " + showtimeend.toString();
 
                 /* player.on('loadedmetadata', function() {
                   var duration1 = player.duration;
-                  console.log(duration1);
-                });*/
+                  console.log(duration1);*/
+                     /*player.duration = function () {
+                  return remaining1 * 60; // the amount of seconds of video
+                };*/
+                
               }
             });
           } else {
