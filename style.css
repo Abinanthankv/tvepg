@@ -148,6 +148,7 @@ body {
   height: 50px;
   text-align: center;
   border-style: solid;
+  font-size: 0.78em;
 }
 .collapsed {
   background: #333333; 
@@ -298,6 +299,7 @@ height:50px;
 /*text-align: center;*/
 border-style: solid;
 border-radius: 20px;
+font-size: 0.78em;
 }
 
 
