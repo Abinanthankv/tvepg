@@ -1,5 +1,5 @@
 var player = videojs("myVideo", {
-  playbackRates: [0.5, 1, 1.5, 2], 
+  playbackRates: [0.5, 1, 1.5, 2],
   responsive: true,
   liveui: true,
   fill: true,
@@ -17,6 +17,11 @@ player.hlsQualitySelector({
   displayCurrentQuality: true,
   default: "highest",
 });
+player.options({
+  disablePictureInPicture: true,
+  // audioOnlyMode: true
+});
+
 const channelList = document.getElementById("channel-list");
 const scrollChannel = document.getElementById("scroll-channel");
 //const epgList = document.getElementById("epg-list");
@@ -36,7 +41,8 @@ const epgstyle = document.getElementById("epg-scroll");
 const verticalline = document.getElementById("vertical-line");
 const epgScroll = document.getElementById("channel-list-container");
 const toggleButton = document.getElementById("toggle-list-size");
-var activeChannel = "";
+const timecontrol = document.querySelector(".vjs-time-control");
+let activeChannel;
 let filteredData;
 let isShowHD = false;
 let isListExpanded = false;
@@ -53,6 +59,10 @@ let foundgenere;
 let foundlanguage;
 let timeoutId = null;
 var count = 0;
+let duration1 = null; // Initialize duration
+let remaining1 = null;
+let showtimestart = null;
+let showtimeend = null;
 function detectBrowserAndDeviceType() {
   const userAgent = navigator.userAgent;
   const isMobile =
@@ -144,7 +154,6 @@ window.addEventListener("scroll", function () {
     if (document.pictureInPictureElement && !player.paused()) {
       player.exitPictureInPicture();
     }
-
   }
 });
 
@@ -167,7 +176,6 @@ function preventArrowKeyChange(event) {
   }
 }
 
-
 function generateEPGList() {
   apichannels().then((data) => {
     if (data) {
@@ -181,35 +189,35 @@ function generateEPGList() {
   });
 }
 function nowtimewidth() {
+  if(!isListExpanded)
+  {
   const id111 = jioepgtimeformat();
   const nowtime = convertTimeToHHMM(id111.toString());
   const id222 = generateTimeList(id111.toString());
   const remainingsecs = getRemainingTime(id222[0], nowtime);
   verticalline.style.left = 370 + remainingsecs * 11 + "px";
   return remainingsecs;
+  }
 }
 function getKeyByValue(object, value) {
   return Object.keys(object).find((key) => object[key] === value);
 }
 async function apichannels() {
- console.log(foundlanguage)
- console.log(foundgenere)
+ // console.log(foundlanguage);
+ // console.log(foundgenere);
   return fetch(
     `https://jiotvapi.cdn.jio.com/apis/v3.0/getMobileChannelList/get/?langId=6&devicetype=phone&os=android&usertype=JIO&version=343`
   )
     .then((response) => response.json())
     .then((data) => {
       if (foundgenere == null && foundlanguage == null) {
-        const Array2 = data.result
-
-          .map((channels) => ({
-            id: channels.channel_id,
-            name: channels.channel_name,
-            logo: `https://jiotv.catchup.cdn.jio.com/dare_images/images/${channels.logoUrl}`,
-          }));
+        const Array2 = data.result.map((channels) => ({
+          id: channels.channel_id,
+          name: channels.channel_name,
+          logo: `https://jiotv.catchup.cdn.jio.com/dare_images/images/${channels.logoUrl}`,
+        }));
         return Array2;
-      }
-      else if (foundgenere != null && foundlanguage == null) {
+      } else if (foundgenere != null && foundlanguage == null) {
         const Array2 = data.result
           .filter(
             (channels) =>
@@ -221,8 +229,7 @@ async function apichannels() {
             logo: `https://jiotv.catchup.cdn.jio.com/dare_images/images/${channels.logoUrl}`,
           }));
         return Array2;
-      }
-      else if (foundgenere == null && foundlanguage != null) {
+      } else if (foundgenere == null && foundlanguage != null) {
         const Array2 = data.result
           .filter(
             (channels) =>
@@ -234,12 +241,13 @@ async function apichannels() {
             logo: `https://jiotv.catchup.cdn.jio.com/dare_images/images/${channels.logoUrl}`,
           }));
         return Array2;
-      }
-      else {
+      } else {
         const Array2 = data.result
           .filter(
             (channels) =>
-              channels.channelCategoryId.toString() === foundgenere.toString() && channels.channelLanguageId.toString() === foundlanguage.toString()
+              channels.channelCategoryId.toString() ===
+                foundgenere.toString() &&
+              channels.channelLanguageId.toString() === foundlanguage.toString()
           )
           .map((channels) => ({
             id: channels.channel_id,
@@ -250,27 +258,65 @@ async function apichannels() {
       }
     });
 }
+function checkAndCallFunction() {
+  const now = new Date();
+  const minutes = now.getMinutes();
+  nowtimewidth();
+  // filtereditemlist()
+  if (minutes === 30||minutes===0) {
+    filtereditemlist();
+  if(activeChannel!=null)
+  {
+   getduration(activeChannel).then((data) => {
+    if (data) {
+      player.duration = function () {
+        return remaining1 * 60; // the amount of seconds of video
+      };
+      console.log("hell yeah")
+      var timeDividerSpan = player.controlBar
+        .getChild("timeDivider")
+        .el()
+        .querySelector("span");
+      timeDividerSpan.textContent =
+        showtimestart.toString() + "/" + showtimeend.toString();
+
+      /* player.on('loadedmetadata', function() {
+                  var duration1 = player.duration;
+                  console.log(duration1);
+                });*/
+    }
+  });
+}
+  }
+}
+checkAndCallFunction();
+// Check every minute
+//checkAndCallFunction();
+setInterval(checkAndCallFunction, 60000);
+
 function filtereditemlist() {
   channelList.innerHTML = "";
   scrollChannel.innerHTML = "";
   apichannels().then((data) => {
     if (data) {
-      if(data.length===0)
-      {
-      //  console.log(data.length);
+      if (data.length === 0) {
+        //  console.log(data.length);
         channelList.innerHTML = `<div class="container">
         <h2 class="error-title">Sorry no channel found</h2>
             <img src=${"https://github.com/Abinanthankv/tv.m3u/blob/main/undraw_monitor_iqpq.svg?raw=true"}>    
     </div>`;
       }
-      
+
       data.forEach((item) => {
         // console.log(item.id);
         const listItem = document.createElement("li");
         listItem.id = "channelIDD";
         const scrollchannelid = document.createElement("li");
         scrollchannelid.id = "scrollchannelID";
-        scrollchannelid.insertAdjacentHTML("beforeend", `<img src="${item.logo}">`);
+        scrollchannelid.insertAdjacentHTML(
+          "beforeend",
+          `<img src="${item.logo}">`
+        );
         const nowPlayingSpan = document.createElement("span");
         nowPlayingSpan.id = "nowplaying-span"; // Add a class for styling
         nowPlayingSpan.innerText = item.name;
@@ -290,7 +336,7 @@ function filtereditemlist() {
           );
           currentPlaying.innerHTML = "";
           currentPlayinginfo.innerHTML = "";
-          const apiUrl = `https://jiotvapi.cdn.jio.com/apis/v1.3/getepg/get?offset=0&channel_id=${item.id}&langId=6`; 
+          const apiUrl = `https://jiotvapi.cdn.jio.com/apis/v1.3/getepg/get?offset=0&channel_id=${item.id}&langId=6`;
           var currentTime = convertTimeToHHMMSS(jioepgtimeformat());
           var channelLogo = document.getElementById("channel-logo");
           channelLogo.style.display = "block";
@@ -298,11 +344,14 @@ function filtereditemlist() {
           makeApiRequest(apiUrl).then((data) => {
             if (data) {
               data.epg.forEach((item) => {
-                if (item.showtime <= currentTime && currentTime < item.endtime) {
+                if (
+                  item.showtime <= currentTime &&
+                  currentTime < item.endtime
+                ) {
                   fetch(
-                    `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`
+                    `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`
                   ).then((response) => {
-                    const imageUrl = response.url; 
+                    const imageUrl = response.url;
                     if (imageUrl != "") {
                       channelLogo.src = imageUrl;
                     }
@@ -310,7 +359,7 @@ function filtereditemlist() {
                   fetch(
                     `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`
                   ).then((response) => {
-                    const posterUrl = response.url; 
+                    const posterUrl = response.url;
                     player.poster(posterUrl);
                   });
                   currentPlaying.style.color = "green";
@@ -330,7 +379,7 @@ function filtereditemlist() {
           }
           // to change css style
           scrollchannelid.style.backgroundColor = "lightgreen";
-      
+          activeChannel = item.id;
           if (item.id != "") {
             player.src({
               src: `https://patrol-gray-seal-alloy.trycloudflare.com/app/live.php?id=${item.id}&e=.m3u`,
@@ -340,7 +389,24 @@ function filtereditemlist() {
               player.load();
               player.play();
             });
+            getduration(item.id).then((data) => {
+              if (data) {
+                player.duration = function () {
+                  return remaining1 * 60; // the amount of seconds of video
+                };
+                var timeDividerSpan = player.controlBar
+                  .getChild("timeDivider")
+                  .el()
+                  .querySelector("span");
+                timeDividerSpan.textContent =
+                  showtimestart.toString() + "/" + showtimeend.toString();
 
+                /* player.on('loadedmetadata', function() {
+                  var duration1 = player.duration;
+                  console.log(duration1);
+                });*/
+              }
+            });
           } else {
             player.src({
               src: item.url,
@@ -356,149 +422,146 @@ function filtereditemlist() {
     }
   });
 }
-    const categories = {
-      "Business News": "💼",
-      Entertainment: "🍿",
-      Infotainment: "📺",
-      Kids: "👶",
-      Lifestyle: "🏠",
-      Movies: "🎥",
-      Music: "🎵",
-      News: "📰",
-      Shopping: "🛒",
-      Sports: "⚽",
-    };
-    const languages = {
-      1: "Hindi",
-      2: "Marathi",
-      3: "Punjabi",
-      4: "Urdu",
-      5: "Bengali",
-      6: "English",
-      7: "Malayalam",
-      8: "Tamil",
-      9: "Gujarati",
-      10: "Odia",
-      11: "Telugu",
-      12: "Bhojpuri",
-      13: "Kannada",
-      14: "Assamese",
-      15: "Nepali",
-      16: "French"
-    };
-    for (const langugage in languages) {
-      const option = document.createElement("option");
-      option.value = languages[langugage];
-      option.text = languages[langugage];
-      filterLanguage.appendChild(option);
-    }
-    for (const category in categories) {
-      const option = document.createElement("option");
-      const emoji = categories[category];
-      option.value = category;
-      option.text = `${emoji} ${category}`;
-      filterCategory.appendChild(option);
-    }
+const categories = {
+  "Business News": "💼",
+  Entertainment: "🍿",
+  Infotainment: "📺",
+  Kids: "👶",
+  Lifestyle: "🏠",
+  Movies: "🎥",
+  Music: "🎵",
+  News: "📰",
+  Shopping: "🛒",
+  Sports: "⚽",
+};
+const languages = {
+  1: "Hindi",
+  2: "Marathi",
+  3: "Punjabi",
+  4: "Urdu",
+  5: "Bengali",
+  6: "English",
+  7: "Malayalam",
+  8: "Tamil",
+  9: "Gujarati",
+  10: "Odia",
+  11: "Telugu",
+  12: "Bhojpuri",
+  13: "Kannada",
+  14: "Assamese",
+  15: "Nepali",
+  16: "French",
+};
+for (const langugage in languages) {
+  const option = document.createElement("option");
+  option.value = languages[langugage];
+  option.text = languages[langugage];
+  filterLanguage.appendChild(option);
+}
+for (const category in categories) {
+  const option = document.createElement("option");
+  const emoji = categories[category];
+  option.value = category;
+  option.text = `${emoji} ${category}`;
+  filterCategory.appendChild(option);
+}
 
-  filterCategory.parentElement.appendChild(filterLanguage);
+filterCategory.parentElement.appendChild(filterLanguage);
 
-  filterCategory.addEventListener("change", () => {
-      const genre_dict = {
-        5: "Entertainment",
-        6: "Movies",
-        7: "Kids",
-        8: "Sports",
-        9: "Lifestyle",
-        10: "Infotainment",
-        11: "Religious",
-        12: "News",
-        13: "Music",
-        14: "Regional",
-        15: "Devotional",
-        16: "Business News",
-        17: "Educational",
-        18: "Shopping",
-        19: "Jio Darshan",
-      };
-      const selectedCategory = filterCategory.value;
-      foundgenere = getKeyByValue(genre_dict, selectedCategory);
-      resetview();
-      filtereditemlist();
-    });
+filterCategory.addEventListener("change", () => {
+  const genre_dict = {
+    5: "Entertainment",
+    6: "Movies",
+    7: "Kids",
+    8: "Sports",
+    9: "Lifestyle",
+    10: "Infotainment",
+    11: "Religious",
+    12: "News",
+    13: "Music",
+    14: "Regional",
+    15: "Devotional",
+    16: "Business News",
+    17: "Educational",
+    18: "Shopping",
+    19: "Jio Darshan",
+  };
+  const selectedCategory = filterCategory.value;
+  foundgenere = getKeyByValue(genre_dict, selectedCategory);
+  resetview();
+  filtereditemlist();
+});
 
-    filterLanguage.addEventListener("change", () => {
-      const language_dict = {
-        1: "Hindi",
-        2: "Marathi",
-        3: "Punjabi",
-        4: "Urdu",
-        5: "Bengali",
-        6: "English",
-        7: "Malayalam",
-        8: "Tamil",
-        9: "Gujarati",
-        10: "Odia",
-        11: "Telugu",
-        12: "Bhojpuri",
-        13: "Kannada",
-        14: "Assamese",
-        15: "Nepali",
-        16: "French"
-      }
-      const selectedGroup = filterLanguage.value;
-      const selectedCategory = filterCategory.value;
-    
-      foundlanguage = getKeyByValue(language_dict, selectedGroup);
-   
-  
-      resetview();
-      filtereditemlist(filteredData);
-      // generateEPGList(filteredData);
-    });
-    
-    toggleButton.addEventListener("click", function () {
+filterLanguage.addEventListener("change", () => {
+  const language_dict = {
+    1: "Hindi",
+    2: "Marathi",
+    3: "Punjabi",
+    4: "Urdu",
+    5: "Bengali",
+    6: "English",
+    7: "Malayalam",
+    8: "Tamil",
+    9: "Gujarati",
+    10: "Odia",
+    11: "Telugu",
+    12: "Bhojpuri",
+    13: "Kannada",
+    14: "Assamese",
+    15: "Nepali",
+    16: "French",
+  };
+  const selectedGroup = filterLanguage.value;
+  const selectedCategory = filterCategory.value;
 
-      const selectedGroup = filterLanguage.value;
-      const selectedCategory = filterCategory.value;
-      // Filter data based on selected group (language) and category
-      if (selectedGroup === "" && selectedCategory === "") {
-        alert("Please select any language to continue");
-      }
-      if (isListExpanded) {
-        filtereditemlist();
-        scrollChannel.classList.remove("channel-toggle");
-        scrollChannel.classList.add("scroll-list");
-        scrollChannel.style.position = "sticky";
-        verticalline.style.display = "flex";
-        epgScroll.style.display = "flex";
-        epgScroll.style.width = 2800 + "%";
-        generateEPGList();
-        epgstyle.style.display = "flex";
-        videodetails.style.position = "relative";
-      } else {
-        scrollChannel.style.position = "relative";
-        videodetails.style.position = "sticky";
-        filtereditemlist(filteredData);
-        verticalline.style.display = "none";
-        epgstyle.style.display = "none";
-        scrollChannel.classList.add("channel-toggle");
-        scrollChannel.classList.remove("scroll-list");
-        epgScroll.style.display = "block";
-        epgScroll.style.width = 100 + "%";
-      }
+  foundlanguage = getKeyByValue(language_dict, selectedGroup);
 
-      if (isListExpanded) {
-        toggleButton.textContent = "HIDE EPG";
-      } else {
-        toggleButton.textContent = "SHOW EPG";
-      }
+  resetview();
+  filtereditemlist(filteredData);
+  // generateEPGList(filteredData);
+});
 
-      isListExpanded = !isListExpanded; // Toggle state for next click
-    });
+toggleButton.addEventListener("click", function () {
+  const selectedGroup = filterLanguage.value;
+  const selectedCategory = filterCategory.value;
+  // Filter data based on selected group (language) and category
+  if (selectedGroup === "" && selectedCategory === "") {
+    alert("Please select any language to continue");
+  }
+  if (isListExpanded) {
+    filtereditemlist();
+    scrollChannel.classList.remove("channel-toggle");
+    scrollChannel.classList.add("scroll-list");
+    scrollChannel.style.position = "sticky";
+    verticalline.style.display = "flex";
+    verticalline.style.background="#7cd179"
+    epgScroll.style.display = "flex";
+    epgScroll.style.width = 2800 + "%";
+    generateEPGList();
+    epgstyle.style.display = "flex";
+    videodetails.style.position = "relative";
+  } else {
+    scrollChannel.style.position = "relative";
+    videodetails.style.position = "sticky";
+    filtereditemlist(filteredData);
+    verticalline.style.display = "none";
+    epgstyle.style.display = "none";
+    scrollChannel.classList.add("channel-toggle");
+    scrollChannel.classList.remove("scroll-list");
+    epgScroll.style.display = "block";
+    epgScroll.style.width = 100 + "%";
+  }
 
+  if (isListExpanded) {
+    toggleButton.textContent = "HIDE EPG";
+  } else {
+    toggleButton.textContent = "SHOW EPG";
+  }
+
+  isListExpanded = !isListExpanded; // Toggle state for next click
+});
 
 function resetview() {
- 
   verticalline.style.display = "none";
   epgstyle.style.display = "none";
   scrollChannel.classList.add("channel-toggle");
@@ -510,14 +573,12 @@ function resetview() {
   scrollChannel.style.zIndex = 0;
   isListExpanded = "false";
   toggleButton.textContent = "SHOW EPG";
-
 }
 
 function updateRemainingTime(channelID) {
   const id1 = channelID;
   console.log("yes", id1);
 }
-
 
 function getRemainingTime(starttime, stoptime) {
   // Split the time strings into hours and minutes
@@ -544,7 +605,6 @@ function getRemainingTime(starttime, stoptime) {
   return difference;
 }
 
-
 function getEPGDataByApi(channelId) {
   const apiUrl = `https://jiotvapi.cdn.jio.com/apis/v1.3/getepg/get?offset=${count}&channel_id=${channelId}&langId=6`; // Replace with your API URL
   const epgul = document.getElementById(channelId);
@@ -561,17 +621,24 @@ function getEPGDataByApi(channelId) {
     timeline.innerHTML = item;
     epgtime.appendChild(timeline);
   });
+
   makeApiRequest(apiUrl).then((data) => {
     if (data) {
       data.epg.forEach((item) => {
         if (item.showtime <= currentTime && currentTime < item.endtime) {
           curr.textContent = item.showname;
+          curr.insertAdjacentHTML(
+            "beforeend",
+            `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`}>`
+          );
+
           var duration = getRemainingTime(currentTime, item.endtime);
-          if (duration * 11.4 < 342) {
-            curr.style.width = 352 + "px";
+
+          if (duration * 11.4 < 352) {
+            curr.style.width = 362 + "px";
             //curr.style.paddingRight = duration * 10.4 + "px";
           } else {
-            curr.style.width = duration * 11.4 + "px";
+            curr.style.width = duration * 13.4 + "px";
           }
           epgul.appendChild(curr);
         }
@@ -583,7 +650,12 @@ function getEPGDataByApi(channelId) {
           future.id = "timeshift";
           future.innerHTML = "";
           future.textContent = item.showname;
-          future.style.width = item.duration * 11.4 + "px";
+          future.insertAdjacentHTML(
+            "beforeend",
+            `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`}>`
+          );
+
+          future.style.width = item.duration * 13.4 + "px";
           epgul.appendChild(future);
         }
       });
@@ -591,8 +663,26 @@ function getEPGDataByApi(channelId) {
   });
   return count + 1;
 }
+function getduration(channelId) {
+  const apiUrl = `https://jiotvapi.cdn.jio.com/apis/v1.3/getepg/get?offset=${count}&channel_id=${channelId}&langId=6`; // Replace with your API URL
+  var currentTime = convertTimeToHHMMSS(jioepgtimeformat());
 
-
+  return makeApiRequest(apiUrl).then((data) => {
+    if (data) {
+      data.epg.forEach((item) => {
+        if (item.showtime <= currentTime && currentTime < item.endtime) {
+          //duration = getRemainingTime(currentTime, item.endtime);
+          duration1 = item.duration;
+          remaining1 = getRemainingTime(currentTime, item.endtime);
+          showtimestart = item.showtime.slice(0, 5);
+          showtimeend = item.endtime.slice(0, 5);
+        }
+      });
+      return duration1; // Return the duration found
+    }
+    return null; // Return null if no data
+  });
+}
 
 function convertTimeToHHMM(timeString) {
   // Extract year, month, day, hour, minute from the string
@@ -632,7 +722,6 @@ function jioepgtimeformat() {
   return formattedTime;
 }
 function generateTimeList(timestamp) {
-
   const startDate = new Date(
     timestamp.substring(0, 4),
     timestamp.substring(4, 6) - 1,

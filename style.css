@@ -332,7 +332,7 @@ border-radius: 20px;
  pointer-events: none;
   list-style: none;
  margin-left: 55px;
- height: 85px;
+ /*height: 85px;*/
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -340,9 +340,9 @@ border-radius: 20px;
 
 }
 #vertical-line {
-  width: 1px; /* Adjust the width of the line as needed */
+  width: 3px; /* Adjust the width of the line as needed */
   height: 100%; /* Make the line span the full height of its parent container */
-  background-color: rgb(128, 219, 68); /* Set the color of the line */
+ /* background-color: rgb(128, 219, 68); /* Set the color of the line */
   position: fixed;
 
   z-index: 20;
@@ -354,7 +354,7 @@ border-radius: 20px;
  /* padding-top: 10px;*/
  display: flex;
   justify-content:start;
- 
+ flex-direction: row-reverse;
   align-items: center;
   width: 220px;
  /* background-color: #f1f1f1; */
@@ -368,10 +368,10 @@ border-radius: 20px;
   /* Add box shadow for a subtle hover effect */
   /*box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease-in-out; /* Add a smooth hover transition */
-  border-radius: 70PX !important;
+  border-radius: 20PX !important;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease-in-out;
-  padding-left: 20px;
+  padding-left: 2px;
 
 }
 
@@ -428,6 +428,7 @@ border-radius: 20px;
 .logo-list img{
   width: 100px;
   height: 100px;
+  border-radius: 20px;
 }
 .scroll-list img{
   width: 100px;
@@ -472,6 +473,8 @@ border-radius: 20px;
 /*.vjs-current-time,.vjs-time-control,.vjs-control,.vjs-current-time-display,.vjs-big-play-button{
   display: block;
 }*/
+.video-js .vjs-time-control{display: block;}
+    .video-js .vjs-remaining-time{display: block;}
 .fab {
   display:none;
   position: fixed;
