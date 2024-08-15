@@ -329,15 +329,16 @@ font-size: 0.78em;
   align-items: flex-start;
  /* width: fit-content;*/
   list-style: none;
-  padding: 0;
+  /*padding: 0;*/
+  padding-top: 45px;
   margin: 0;
 }
 .myClass{
   display:flex;
  pointer-events: none;
   list-style: none;
- margin-left: 55px;
- height: 85px;
+ margin-left: 40px;
+ height: 95px;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -362,7 +363,7 @@ font-size: 0.78em;
  flex-direction: row-reverse;
   align-items: center;
   width: 220px;
- /* background-color: #f1f1f1; */
+  background-color:bisque; 
   /*flex-wrap: wrap;*/
   text-align: center; /* Center the content of each item */
   font-family: Arial, sans-serif; /* Set font family */
@@ -374,9 +375,9 @@ font-size: 0.78em;
   /*box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease-in-out; /* Add a smooth hover transition */
   border-radius: 20PX !important;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease-in-out;
-  padding-left: 2px;
+  margin-right:0.7em;
 
 }
 
