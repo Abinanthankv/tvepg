@@ -378,7 +378,7 @@ function filtereditemlist() {
                   }
                   else{
                     currentPlayinginfo.innerHTML = '📺'+item.episode_num.toString()+ ':'+ item.episode_desc;
-                    castInfo.innerHTML='🎭'+item.starCast;	
+                   // castInfo.innerHTML='🎭'+item.starCast;	
 
                   }
                  
@@ -395,7 +395,8 @@ function filtereditemlist() {
             channelItem.style.backgroundColor = "";
           }
           // to change css style
-          scrollchannelid.style.backgroundColor = "lightgreen";
+         scrollchannelid.style.backgroundColor = "lightgreen";
+         
           activeChannel = item.id;
           player.pause();
           if (item.id != "") {
