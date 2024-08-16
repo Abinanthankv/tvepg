@@ -835,15 +835,7 @@ function addToCalendar(startTime, endTime, title,info) {
     const isoEndTime = endDate.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
 
   // Construct the calendar link
-//  const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${isoStartTime}/${isoEndTime}&details=${encodeURIComponent(info)}`;
+ const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${isoStartTime}/${isoEndTime}&details=${encodeURIComponent(info)}`;
+window.open(calendarLink,'_blank');
 
-  // Open the calendar link in a new tab
- // window.open(calendarLink, '_blank');
-  
- const mobileCalendarLink = `intent://www.google.com/calendar/event?title=${encodeURIComponent(title)}&beginVal=${isoStartTime}&endVal=${isoEndTime}&description=${encodeURIComponent(info)}#Intent;scheme=content;package=com.google.android.calendar;action=INSERT;end`;
-
-window.open(mobileCalendarLink);
-  //const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTime}/${endTime}&details=${title}`;
- // window.open(calendarLink, '_blank');
 }
-
