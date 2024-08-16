@@ -842,7 +842,7 @@ function addToCalendar(startTime, endTime, title,info) {
   
  const mobileCalendarLink = `intent://event?title=${encodeURIComponent(title)}&beginVal=${isoStartTime}&endVal=${isoEndTime}&description=${encodeURIComponent(info)}#Intent;scheme=content;package=com.google.android.calendar;action=INSERT;end`;
 
-///window.open(mobilecalendarLink, '_blank');
+window.open(mobileCalendarLink);
   //const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTime}/${endTime}&details=${title}`;
  // window.open(calendarLink, '_blank');
 }
