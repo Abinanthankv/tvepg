@@ -66,6 +66,8 @@ let duration1 = null; // Initialize duration
 let remaining1 = null;
 let showtimestart = null;
 let showtimeend = null;
+let channelname="";
+let info="";
 function detectBrowserAndDeviceType() {
   const userAgent = navigator.userAgent;
   const isMobile =
@@ -420,7 +422,7 @@ function filtereditemlist() {
                 timeDividerSpan.textContent =
                   showtimestart.toString() + "/" + showtimeend.toString();
                   showTime.innerHTML='⌛'+showtimestart.toString() + " / " + showtimeend.toString();
-
+                  console.log(showtimestart.slice(0, 5), showtimeend.slice(0, 5));
                 /* player.on('loadedmetadata', function() {
                   var duration1 = player.duration;
                   console.log(duration1);*/
@@ -669,12 +671,33 @@ function getEPGDataByApi(channelId) {
           const nowTime = document.createElement("li");
           epgTime.id = "epgtime";
           future.id = "timeshift";
+          const button = document.createElement('button');
+          button.id="addtocalendar";
+          button.textContent = '📅'+'Add to Calendar';
+          
+         
           future.innerHTML = "";
           future.textContent = item.showname;
          // future.insertAdjacentHTML("beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`}>` );
 
           future.style.width = item.duration * 13.4 + "px";
+          future.appendChild(button);
           epgul.appendChild(future);
+          button.addEventListener('click', () => {
+            if(item.episode_num===-1 || item.episode_desc==="")
+              {
+                info= item.description;
+              }
+              else{
+                info= '📺'+item.episode_num.toString()+ ':'+ item.episode_desc;
+               // castInfo.innerHTML='🎭'+item.starCast;	
+
+              }
+              
+           // alert("Hello");
+            addToCalendar(item.startEpoch, item.endEpoch, item.showname +' ' +'@'+' '+item.channel_name ,info);
+            console.log(item.showtime.slice(0, 5), item.endtime.slice(0, 5), item.showname);
+          });
         }
       });
     }
@@ -800,5 +823,24 @@ async function makeApiRequest(url) {
     console.error("Error making API request:", error);
     return null;
   }
+}
+
+
+function addToCalendar(startTime, endTime, title,info) {
+  
+  const startDate = new Date(startTime);
+  const isoStartTime = startDate.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+    // Convert endTime to ISO format  
+    const endDate = new Date(endTime);
+    const isoEndTime = endDate.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+
+  // Construct the calendar link
+  const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${isoStartTime}/${isoEndTime}&details=${encodeURIComponent(info)}`;
+
+  // Open the calendar link in a new tab
+  window.open(calendarLink, '_blank');
+  
+  //const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTime}/${endTime}&details=${title}`;
+ // window.open(calendarLink, '_blank');
 }
 
