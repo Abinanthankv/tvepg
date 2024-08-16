@@ -141,6 +141,7 @@ body {
   color: greenyellow;
 }
 #toggle-list-size{
+  display: none;
   height: 50px;
   width:120px;
   margin: 10px;
@@ -213,6 +214,9 @@ body {
   z-index: 25;
   
 
+}
+#show-info{
+  display: flex;
 }
 #video-container{
   display: none;

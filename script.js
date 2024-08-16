@@ -44,6 +44,7 @@ const epgScroll = document.getElementById("channel-list-container");
 const toggleButton = document.getElementById("toggle-list-size");
 const timecontrol = document.querySelector(".vjs-time-control");
 const showTime=document.getElementById("show-time");
+const castInfo=document.getElementById("cast-info");
 let activeChannel;
 let filteredData;
 let isShowHD = false;
@@ -362,11 +363,25 @@ function filtereditemlist() {
                     `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`
                   ).then((response) => {
                     const posterUrl = response.url;
-                    player.poster(posterUrl);
+                    if (posterUrl != "") {
+                      player.poster(posterUrl);
+                    }
+                    
                   });
+                  console.log(item.episode_num);
+                  console.log(item.episode_desc);
                   currentPlaying.style.color = "green";
                   currentPlaying.innerHTML = item.showname;
-                  currentPlayinginfo.innerHTML = item.description;
+                  if(item.episode_num===-1 || item.episode_desc==="")
+                  {
+                    currentPlayinginfo.innerHTML = item.description;
+                  }
+                  else{
+                    currentPlayinginfo.innerHTML = '📺'+item.episode_num.toString()+ ':'+ item.episode_desc;
+                    castInfo.innerHTML='🎭'+item.starCast;	
+
+                  }
+                 
                 }
               });
             }
@@ -382,9 +397,13 @@ function filtereditemlist() {
           // to change css style
           scrollchannelid.style.backgroundColor = "lightgreen";
           activeChannel = item.id;
+          player.pause();
           if (item.id != "") {
+            
+          
             player.src({
               src: `https://patrol-gray-seal-alloy.trycloudflare.com/app/live.php?id=${item.id}&e=.m3u`,
+            
               type: "application/vnd.apple.mpegURL",
             });
             player.ready(function () {
@@ -491,6 +510,7 @@ filterCategory.addEventListener("change", () => {
   };
   const selectedCategory = filterCategory.value;
   foundgenere = getKeyByValue(genre_dict, selectedCategory);
+  toggleButton.style.display="block";
   resetview();
   filtereditemlist();
 });
@@ -518,7 +538,7 @@ filterLanguage.addEventListener("change", () => {
   const selectedCategory = filterCategory.value;
 
   foundlanguage = getKeyByValue(language_dict, selectedGroup);
-
+  toggleButton.style.display="block";
   resetview();
   filtereditemlist(filteredData);
   // generateEPGList(filteredData);
@@ -528,7 +548,7 @@ toggleButton.addEventListener("click", function () {
   const selectedGroup = filterLanguage.value;
   const selectedCategory = filterCategory.value;
   // Filter data based on selected group (language) and category
-  if (selectedGroup === "" && selectedCategory === "") {
+  if (selectedGroup ===null && selectedCategory ===null) {
     alert("Please select any language to continue");
   }
   if (isListExpanded) {
@@ -546,7 +566,7 @@ toggleButton.addEventListener("click", function () {
   } else {
     scrollChannel.style.position = "relative";
     videodetails.style.position = "sticky";
-    filtereditemlist(filteredData);
+    filtereditemlist();
     verticalline.style.display = "none";
     epgstyle.style.display = "none";
     scrollChannel.classList.add("channel-toggle");
@@ -633,7 +653,7 @@ function getEPGDataByApi(channelId) {
          // curr.insertAdjacentHTML( "beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`}>`);
 
           var duration = getRemainingTime(currentTime, item.endtime);
-
+         
           if (duration * 11.4 < 352) {
             curr.style.width = 362 + "px";
             //curr.style.paddingRight = duration * 10.4 + "px";
@@ -780,3 +800,4 @@ async function makeApiRequest(url) {
     return null;
   }
 }
+
