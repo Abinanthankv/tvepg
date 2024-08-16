@@ -840,9 +840,9 @@ function addToCalendar(startTime, endTime, title,info) {
   // Open the calendar link in a new tab
  // window.open(calendarLink, '_blank');
   
-  const mobilecalendarLink = `intent://view?title=${encodeURIComponent(title)}&dtstart=${isoStartTime}&dtend=${isoEndTime}&details=${encodeURIComponent(info)}#Intent;scheme=content;package=com.android.calendar;end`;
+ const mobileCalendarLink = `intent://event?title=${encodeURIComponent(title)}&beginVal=${isoStartTime}&endVal=${isoEndTime}&description=${encodeURIComponent(info)}#Intent;scheme=content;package=com.google.android.calendar;action=INSERT;end`;
 
-window.open(mobilecalendarLink, '_blank');
+///window.open(mobilecalendarLink, '_blank');
   //const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTime}/${endTime}&details=${title}`;
  // window.open(calendarLink, '_blank');
 }
