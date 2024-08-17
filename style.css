@@ -452,6 +452,7 @@ font-size: 0.78em;
   color: #333;
   cursor: pointer;
   float: right;
+  font-size: 20px;
   background-color: rgb(155, 166, 219);
 }
 .wrapper button:hover {
