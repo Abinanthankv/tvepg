@@ -6,7 +6,6 @@ var player = videojs("myVideo", {
   enableSmoothSeeking: true,
   controls: true,
   controlBar: {
-   
     skipButtons: {
       forward: 5,
       backward: 10,
@@ -43,8 +42,9 @@ const verticalline = document.getElementById("vertical-line");
 const epgScroll = document.getElementById("channel-list-container");
 const toggleButton = document.getElementById("toggle-list-size");
 const timecontrol = document.querySelector(".vjs-time-control");
-const showTime=document.getElementById("show-time");
-const castInfo=document.getElementById("cast-info");
+const showTime = document.getElementById("show-time");
+const castInfo = document.getElementById("cast-info");
+const epgDays = document.getElementById("epg-days");
 let activeChannel;
 let filteredData;
 let isShowHD = false;
@@ -66,8 +66,8 @@ let duration1 = null; // Initialize duration
 let remaining1 = null;
 let showtimestart = null;
 let showtimeend = null;
-let channelname="";
-let info="";
+let channelname = "";
+let info = "";
 function detectBrowserAndDeviceType() {
   const userAgent = navigator.userAgent;
   const isMobile =
@@ -194,22 +194,21 @@ function generateEPGList() {
   });
 }
 function nowtimewidth() {
-  if(!isListExpanded)
-  {
-  const id111 = jioepgtimeformat();
-  const nowtime = convertTimeToHHMM(id111.toString());
-  const id222 = generateTimeList(id111.toString());
-  const remainingsecs = getRemainingTime(id222[0], nowtime);
-  verticalline.style.left = 370 + remainingsecs * 11 + "px";
-  return remainingsecs;
+  if (!isListExpanded) {
+    const id111 = jioepgtimeformat();
+    const nowtime = convertTimeToHHMM(id111.toString());
+    const id222 = generateTimeList(id111.toString());
+    const remainingsecs = getRemainingTime(id222[0], nowtime);
+    verticalline.style.left = 370 + remainingsecs * 11 + "px";
+    return remainingsecs;
   }
 }
 function getKeyByValue(object, value) {
   return Object.keys(object).find((key) => object[key] === value);
 }
 async function apichannels() {
- // console.log(foundlanguage);
- // console.log(foundgenere);
+  // console.log(foundlanguage);
+  // console.log(foundgenere);
   return fetch(
     `https://jiotvapi.cdn.jio.com/apis/v3.0/getMobileChannelList/get/?langId=6&devicetype=phone&os=android&usertype=JIO&version=343`
   )
@@ -268,30 +267,27 @@ function checkAndCallFunction() {
   const minutes = now.getMinutes();
   nowtimewidth();
   // filtereditemlist()
-  if (minutes === 30||minutes===0) {
-   // filtereditemlist();
-  if(activeChannel!=null)
-  {
-  /* getduration(activeChannel).then((data) => {
+  if (minutes === 30 || minutes === 0) {
+    // filtereditemlist();
+    if (activeChannel != null) {
+      /* getduration(activeChannel).then((data) => {
     if (data) {
      /* player.duration = function () {
         return duration1 * 60; // the amount of seconds of video
       };*/
-     
-    /*  var timeDividerSpan = player.controlBar
+      /*  var timeDividerSpan = player.controlBar
         .getChild("timeDivider")
         .el()
         .querySelector("span");
       timeDividerSpan.textContent =
         showtimestart.toString() + "/" + showtimeend.toString();*/
-
       /* player.on('loadedmetadata', function() {
                   var duration1 = player.duration;
                   console.log(duration1);
                 });
     }
   });*/
-}
+    }
   }
 }
 checkAndCallFunction();
@@ -326,12 +322,11 @@ function filtereditemlist() {
         nowPlayingSpan.id = "nowplaying-span"; // Add a class for styling
         nowPlayingSpan.innerText = item.name;
         scrollchannelid.appendChild(nowPlayingSpan);
-        if (!isListExpanded) {
-          const ulepg = document.createElement("ul");
-          ulepg.id = item.id;
-          listItem.appendChild(ulepg);
-          ulepg.classList.add("myClass");
-        }
+        const ulepg = document.createElement("ul");
+        ulepg.id = item.id;
+        listItem.appendChild(ulepg);
+        ulepg.classList.add("myClass");
+
         const tagid = document.getElementsByClassName("nowplayingtag");
 
         scrollchannelid.addEventListener("click", (event) => {
@@ -368,22 +363,21 @@ function filtereditemlist() {
                     if (posterUrl != "") {
                       player.poster(posterUrl);
                     }
-                    
                   });
                   console.log(item.episode_num);
                   console.log(item.episode_desc);
                   currentPlaying.style.color = "green";
                   currentPlaying.innerHTML = item.showname;
-                  if(item.episode_num===-1 || item.episode_desc==="")
-                  {
+                  if (item.episode_num === -1 || item.episode_desc === "") {
                     currentPlayinginfo.innerHTML = item.description;
+                  } else {
+                    currentPlayinginfo.innerHTML =
+                      "📺" +
+                      item.episode_num.toString() +
+                      ":" +
+                      item.episode_desc;
+                    // castInfo.innerHTML='🎭'+item.starCast;
                   }
-                  else{
-                    currentPlayinginfo.innerHTML = '📺'+item.episode_num.toString()+ ':'+ item.episode_desc;
-                   // castInfo.innerHTML='🎭'+item.starCast;	
-
-                  }
-                 
                 }
               });
             }
@@ -397,16 +391,14 @@ function filtereditemlist() {
             channelItem.style.backgroundColor = "";
           }
           // to change css style
-         scrollchannelid.style.backgroundColor = "lightgreen";
-         
+          scrollchannelid.style.backgroundColor = "lightgreen";
+
           activeChannel = item.id;
           player.pause();
           if (item.id != "") {
-            
-          
             player.src({
-              src: `https://patrol-gray-seal-alloy.trycloudflare.com/app/live.php?id=${item.id}&e=.m3u`,
-            
+              src: `https://fundamental-ie-dish-sing.trycloudflare.com/app/live.php?id=${item.id}&e=.m3u`,
+
               type: "application/vnd.apple.mpegURL",
             });
             player.ready(function () {
@@ -421,15 +413,18 @@ function filtereditemlist() {
                   .querySelector("span");
                 timeDividerSpan.textContent =
                   showtimestart.toString() + "/" + showtimeend.toString();
-                  showTime.innerHTML='⌛'+showtimestart.toString() + " / " + showtimeend.toString();
-                  console.log(showtimestart.slice(0, 5), showtimeend.slice(0, 5));
+                showTime.innerHTML =
+                  "⌛" +
+                  showtimestart.toString() +
+                  " / " +
+                  showtimeend.toString();
+                console.log(showtimestart.slice(0, 5), showtimeend.slice(0, 5));
                 /* player.on('loadedmetadata', function() {
                   var duration1 = player.duration;
                   console.log(duration1);*/
-                     /*player.duration = function () {
+                /*player.duration = function () {
                   return remaining1 * 60; // the amount of seconds of video
                 };*/
-                
               }
             });
           } else {
@@ -513,7 +508,7 @@ filterCategory.addEventListener("change", () => {
   };
   const selectedCategory = filterCategory.value;
   foundgenere = getKeyByValue(genre_dict, selectedCategory);
-  toggleButton.style.display="block";
+  toggleButton.style.display = "block";
   resetview();
   filtereditemlist();
 });
@@ -541,7 +536,7 @@ filterLanguage.addEventListener("change", () => {
   const selectedCategory = filterCategory.value;
 
   foundlanguage = getKeyByValue(language_dict, selectedGroup);
-  toggleButton.style.display="block";
+  toggleButton.style.display = "block";
   resetview();
   filtereditemlist(filteredData);
   // generateEPGList(filteredData);
@@ -551,7 +546,7 @@ toggleButton.addEventListener("click", function () {
   const selectedGroup = filterLanguage.value;
   const selectedCategory = filterCategory.value;
   // Filter data based on selected group (language) and category
-  if (selectedGroup ===null && selectedCategory ===null) {
+  if (selectedGroup === null && selectedCategory === null) {
     alert("Please select any language to continue");
   }
   if (isListExpanded) {
@@ -560,9 +555,10 @@ toggleButton.addEventListener("click", function () {
     scrollChannel.classList.add("scroll-list");
     scrollChannel.style.position = "sticky";
     verticalline.style.display = "flex";
-    verticalline.style.background="#7cd179"
+    verticalline.style.background = "#7cd179";
     epgScroll.style.display = "flex";
-    epgScroll.style.width = 2800 + "%";
+    epgScroll.style.width = 1300 + "%";
+    epgDays.style.display = "flex";
     generateEPGList();
     epgstyle.style.display = "flex";
     videodetails.style.position = "relative";
@@ -576,6 +572,7 @@ toggleButton.addEventListener("click", function () {
     scrollChannel.classList.remove("scroll-list");
     epgScroll.style.display = "block";
     epgScroll.style.width = 100 + "%";
+    epgDays.style.display = "none";
   }
 
   if (isListExpanded) {
@@ -599,6 +596,7 @@ function resetview() {
   scrollChannel.style.zIndex = 0;
   isListExpanded = "false";
   toggleButton.textContent = "SHOW EPG";
+  epgDays.style.display = "none";
 }
 
 function updateRemainingTime(channelID) {
@@ -634,75 +632,281 @@ function getRemainingTime(starttime, stoptime) {
 function getEPGDataByApi(channelId) {
   const apiUrl = `https://jiotvapi.cdn.jio.com/apis/v1.3/getepg/get?offset=${count}&channel_id=${channelId}&langId=6`; // Replace with your API URL
   const epgul = document.getElementById(channelId);
-  var epgtime = document.getElementById("epg-time");
-  epgtime.innerHTML = "";
+
   var currentTime = convertTimeToHHMMSS(jioepgtimeformat());
   const curr = document.createElement("li");
   curr.id = "timeshift";
-  const tttt = jioepgtimeformat();
-  const timeList = generateTimeList(tttt.toString());
-  timeList.forEach((item, index) => {
-    const timeline = document.createElement("li");
-    timeline.id = "timeline";
-    timeline.innerHTML = item;
-    epgtime.appendChild(timeline);
-  });
 
   makeApiRequest(apiUrl).then((data) => {
     if (data) {
       data.epg.forEach((item) => {
-        if (item.showtime <= currentTime && currentTime < item.endtime) {
-          curr.textContent = item.showname;
-         // curr.insertAdjacentHTML( "beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`}>`);
-
-          var duration = getRemainingTime(currentTime, item.endtime);
-         
-          if (duration * 11.4 < 352) {
-            curr.style.width = 362 + "px";
-            //curr.style.paddingRight = duration * 10.4 + "px";
-          } else {
-            curr.style.width = duration * 13.4 + "px";
-          }
-          epgul.appendChild(curr);
-        }
-        if (item.showtime > currentTime) {
-          const future = document.createElement("li");
-          const epgTime = document.createElement("li");
-          const nowTime = document.createElement("li");
-          epgTime.id = "epgtime";
-          future.id = "timeshift";
-          const button = document.createElement('button');
-          button.id="addtocalendar";
-          button.textContent = '📅'+'Add to Calendar';
-          
-         
-          future.innerHTML = "";
-          future.textContent = item.showname;
-         // future.insertAdjacentHTML("beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`}>` );
-
-          future.style.width = item.duration * 13.4 + "px";
-          future.appendChild(button);
-          epgul.appendChild(future);
-          button.addEventListener('click', () => {
-            if(item.episode_num===-1 || item.episode_desc==="")
-              {
-                info= item.description;
-              }
-              else{
-                info= '📺'+item.episode_num.toString()+ ':'+ item.episode_desc;
-               // castInfo.innerHTML='🎭'+item.starCast;	
-
-              }
-              
-           // alert("Hello");
-            addToCalendar(item.startEpoch, item.endEpoch, item.showname +' ' +'@'+' '+item.channel_name ,info);
-            console.log(item.showtime.slice(0, 5), item.endtime.slice(0, 5), item.showname);
+        if (count != 0) {
+          const prev = document.createElement("li");
+          prev.id = "timeshift";
+     
+          var epgtime = document.getElementById("epg-time");
+          epgtime.innerHTML = "";
+          epgtime.style.display = "flex";
+          const timeList = generateTimeList(getTodaysMidnight().toString());
+          timeList.forEach((item, index) => {
+            const timeline = document.createElement("li");
+            timeline.id = "timeline";
+            timeline.innerHTML = item;
+            epgtime.appendChild(timeline);
           });
+          if((item.showtime <=currentTime ) )
+          {
+            prev.textContent = item.showname;
+            prev.style.width = item.duration * 12 + "px";
+            
+           
+            epgul.appendChild(prev);
+            prev.addEventListener("click", () => {
+              const existingWrapper = document.querySelector(".wrapper");
+              if (existingWrapper) {
+              existingWrapper.remove();
+              }
+ 
+              const wrapper = document.createElement("div");
+              wrapper.classList.add("wrapper");
+              // Create content for the wrapper based on the clicked item
+              const img = document.createElement("img");
+              const h2 = document.createElement("h2");
+              const span=document.createElement("span");
+              span.textContent=  "⌛" + item.showtime.slice(0, 5).toString() +" / " +item.endtime.slice(0, 5).toString();
+              h2.textContent = ` ${item.showname}`;
+              const p = document.createElement("p");
+              if (item.episode_num === -1 || item.episode_desc === "") {
+                info = item.description;
+                
+              } else {
+                info =
+                  "📺" +
+                  item.episode_num.toString() +
+                  ":" +
+                  item.episode_desc;
+                // castInfo.innerHTML='🎭'+item.starCast;
+              }
+              p.textContent = ` ${info}`;
+              img.src = `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`;
+            
+              wrapper.appendChild(img);
+              wrapper.appendChild(h2);
+              wrapper.appendChild(p);
+              wrapper.appendChild(span);
+              // Create close button
+              const addclaendarButton = document.createElement("button");
+              addclaendarButton.classList.add("addclanedar-button");
+              const closeButton = document.createElement("button");
+              closeButton.classList.add("close-button");
+              closeButton.textContent = "X";
+              closeButton.addEventListener("click", () => {
+                wrapper.remove();
+              });
+              addclaendarButton.textContent = "Add to Calendar";
+              addclaendarButton.addEventListener("click", () => {
+              
+                addToCalendar(
+                  item.startEpoch,
+                  item.endEpoch,
+                  item.showname + " " + "@" + " " + item.channel_name,
+                  info
+                );
+              });
+              wrapper.appendChild(addclaendarButton);
+              wrapper.appendChild(closeButton);
+              
+
+              document.body.appendChild(wrapper);
+              wrapper.style.display = "flex";
+            });
+          }
+          else{
+            const future = document.createElement("li");
+            const epgTime = document.createElement("li");
+           
+            epgTime.id = "epgtime";
+            future.id = "timeshift";
+            const button = document.createElement("button");
+            button.id = "addtocalendar";
+            button.textContent = "📅" + "Add to Calendar";
+            future.innerHTML = "";
+            future.textContent = item.showname;
+            // future.insertAdjacentHTML("beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`}>` );
+            future.style.width = item.duration * 12 + "px";
+            future.addEventListener("click", () => {
+              const existingWrapper = document.querySelector(".wrapper");
+              if (existingWrapper) {
+              existingWrapper.remove();
+              }
+ 
+              const wrapper = document.createElement("div");
+              wrapper.classList.add("wrapper");
+              // Create content for the wrapper based on the clicked item
+              const img = document.createElement("img");
+              const h2 = document.createElement("h2");
+              const span=document.createElement("span");
+              span.textContent=  "⌛" + item.showtime.slice(0, 5).toString() +" / " +item.endtime.slice(0, 5).toString();
+              h2.textContent = ` ${item.showname}`;
+              const p = document.createElement("p");
+              if (item.episode_num === -1 || item.episode_desc === "") {
+                info = item.description;
+                
+              } else {
+                info =
+                  "📺" +
+                  item.episode_num.toString() +
+                  ":" +
+                  item.episode_desc;
+                // castInfo.innerHTML='🎭'+item.starCast;
+              }
+              p.textContent = ` ${info}`;
+              img.src = `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`;
+            
+              wrapper.appendChild(img);
+              wrapper.appendChild(h2);
+              wrapper.appendChild(p);
+              wrapper.appendChild(span);
+              // Create close button
+              const addclaendarButton = document.createElement("button");
+              addclaendarButton.classList.add("addclanedar-button");
+              const closeButton = document.createElement("button");
+              closeButton.classList.add("close-button");
+              closeButton.textContent = "X";
+              closeButton.addEventListener("click", () => {
+                wrapper.remove();
+              });
+              addclaendarButton.textContent = "Add to Calendar";
+              addclaendarButton.addEventListener("click", () => {
+              
+                addToCalendar(
+                  item.startEpoch,
+                  item.endEpoch,
+                  item.showname + " " + "@" + " " + item.channel_name,
+                  info
+                );
+              });
+              wrapper.appendChild(addclaendarButton);
+              wrapper.appendChild(closeButton);
+              
+
+              document.body.appendChild(wrapper);
+              wrapper.style.display = "flex";
+            });
+
+            
+            epgul.appendChild(future);
+         
+          }
+         
+          // curr.insertAdjacentHTML( "beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`}>`);
+         
+        } 
+        else {
+          var epgtime = document.getElementById("epg-time");
+          epgtime.innerHTML = "";
+          epgtime.style.display = "flex";
+          const timeList = generateTimeList(jioepgtimeformat().toString());
+          timeList.forEach((item, index) => {
+            const timeline = document.createElement("li");
+            timeline.id = "timeline";
+            timeline.innerHTML = item;
+            epgtime.appendChild(timeline);
+          });
+          if (item.showtime <= currentTime && currentTime < item.endtime) {
+           
+              curr.textContent = item.showname;
+              // curr.insertAdjacentHTML( "beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`}>`);
+              var duration = getRemainingTime(currentTime, item.endtime);
+              if (duration * 12 < 362) {
+                curr.style.width = 352 + "px";
+                //curr.style.paddingRight = duration * 10.4 + "px";
+              } else {
+                curr.style.width = duration * 12 + "px";
+              }
+              epgul.appendChild(curr);
+            
+          }
+          if (item.showtime > currentTime) {
+            const future = document.createElement("li");
+            const epgTime = document.createElement("li");
+            const nowTime = document.createElement("li");
+            epgTime.id = "epgtime";
+            future.id = "timeshift";
+         
+            future.innerHTML = "";
+            future.textContent = item.showname;
+            // future.insertAdjacentHTML("beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`}>` );
+            future.style.width = item.duration * 12 + "px";
+            future.addEventListener("click", () => {
+              const existingWrapper = document.querySelector(".wrapper");
+             if (existingWrapper) {
+             existingWrapper.remove();
+             }
+
+              const wrapper = document.createElement("div");
+              wrapper.classList.add("wrapper");
+              // Create content for the wrapper based on the clicked item
+              const img = document.createElement("img");
+              const h2 = document.createElement("h2");
+              const span=document.createElement("span");
+              span.textContent=  "⌛" + item.showtime.slice(0, 5).toString() +" / " +item.endtime.slice(0, 5).toString();
+              h2.textContent = ` ${item.showname}`;
+              const p = document.createElement("p");
+              if (item.episode_num === -1 || item.episode_desc === "") {
+                info = item.description;
+                
+              } else {
+                info =
+                  "📺" +
+                  item.episode_num.toString() +
+                  ":" +
+                  item.episode_desc;
+                // castInfo.innerHTML='🎭'+item.starCast;
+              }
+              p.textContent = ` ${info}`;
+              img.src = `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`;
+            
+              wrapper.appendChild(img);
+              wrapper.appendChild(h2);
+              wrapper.appendChild(p);
+              wrapper.appendChild(span);
+              // Create close button
+              const addclaendarButton = document.createElement("button");
+              addclaendarButton.classList.add("addclanedar-button");
+              const closeButton = document.createElement("button");
+              closeButton.classList.add("close-button");
+              closeButton.textContent = "X";
+              closeButton.addEventListener("click", () => {
+                wrapper.remove();
+              });
+              addclaendarButton.textContent = "Add to Calendar";
+              addclaendarButton.addEventListener("click", () => {
+              
+                addToCalendar(
+                  item.startEpoch,
+                  item.endEpoch,
+                  item.showname + " " + "@" + " " + item.channel_name,
+                  info
+                );
+              });
+              wrapper.appendChild(addclaendarButton);
+              wrapper.appendChild(closeButton);
+             
+
+              document.body.appendChild(wrapper);
+              wrapper.style.display = "flex";
+            });
+
+        
+            epgul.appendChild(future);
+            
+          }
         }
       });
     }
   });
-  return count + 1;
+  return count;
 }
 function getduration(channelId) {
   const apiUrl = `https://jiotvapi.cdn.jio.com/apis/v1.3/getepg/get?offset=${count}&channel_id=${channelId}&langId=6`; // Replace with your API URL
@@ -762,6 +966,26 @@ function jioepgtimeformat() {
   var formattedTime = year + month + day + hour + minute + second;
   return formattedTime;
 }
+function getTodaysMidnight() {
+  var now = new Date();
+  var year = now.getFullYear().toString().padStart(4, "0");
+  var month = (now.getMonth() + 1).toString().padStart(2, "0"); // Month (0-indexed)
+  var day = now.getDate().toString().padStart(2, "0");
+  // Set hours, minutes, and seconds to 00:00
+  now.setHours(0, 0, 0);
+  var currentTime = now.getTime() / 1000;
+  // Apply the time shift in seconds (if needed)
+  var adjustedTime = currentTime;
+  // Convert adjusted time back to a Date object
+  var adjustedDate = new Date(adjustedTime * 1000);
+  // Extract and format time components from adjusted Date object
+  var hour = adjustedDate.getHours().toString().padStart(2, "0");
+  var minute = adjustedDate.getMinutes().toString().padStart(2, "0");
+  var second = adjustedDate.getSeconds().toString().padStart(2, "0");
+  var formattedTime = year + month + day + hour + minute + second;
+  return formattedTime;
+}
+
 function generateTimeList(timestamp) {
   const startDate = new Date(
     timestamp.substring(0, 4),
@@ -825,17 +1049,74 @@ async function makeApiRequest(url) {
   }
 }
 
-
-function addToCalendar(startTime, endTime, title,info) {
-  
+function addToCalendar(startTime, endTime, title, info) {
   const startDate = new Date(startTime);
-  const isoStartTime = startDate.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
-    // Convert endTime to ISO format  
-    const endDate = new Date(endTime);
-    const isoEndTime = endDate.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+  const isoStartTime =
+    startDate.toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+  // Convert endTime to ISO format
+  const endDate = new Date(endTime);
+  const isoEndTime =
+    endDate.toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
 
   // Construct the calendar link
- const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${isoStartTime}/${isoEndTime}&details=${encodeURIComponent(info)}`;
-window.open(calendarLink,'_blank');
-
+  const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+    title
+  )}&dates=${isoStartTime}/${isoEndTime}&details=${encodeURIComponent(info)}`;
+  window.open(calendarLink, "_blank");
 }
+
+function createDayList() {
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const today = new Date();
+  const dayIndex = today.getDay();
+
+  const dayList = [];
+  for (let i = 0; i < 7; i++) {
+    const dayName = daysOfWeek[(dayIndex + i) % 7];
+    const listItem = document.createElement("li");
+    listItem.textContent = dayName === daysOfWeek[dayIndex] ? "Today" : dayName;
+
+    // Assign value to list item
+    listItem.value = i;
+    // listItem.style.background="transparent"
+    listItem.addEventListener("click", () => {
+      const clickedDayValue = listItem.value;
+      count = clickedDayValue;
+
+      filtereditemlist();
+
+      generateEPGList();
+      // Do something with the clicked day value
+
+      // listItem.classList.add('active');
+    });
+
+    dayList.push(listItem);
+  }
+
+  return dayList;
+}
+
+const dayListContainer = document.getElementById("epg-days"); // Replace with your container ID
+const listItems = createDayList();
+dayListContainer.append(...listItems);
+
+const listItemscolor = document.querySelectorAll("#epg-days li");
+
+listItemscolor.forEach((item) => {
+  item.addEventListener("click", function () {
+    // Remove the 'active' class from all list items
+    listItemscolor.forEach((listItem) => listItem.classList.remove("active"));
+
+    // Add the 'active' class to the clicked item
+    this.classList.add("active");
+  });
+});

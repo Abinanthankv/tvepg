@@ -415,6 +415,47 @@ font-size: 0.78em;
   margin: 0;
   
 }
+#scroll-channel li.active{
+  background-color: blueviolet;
+}
+.wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  z-index:  
+ 999;
+  display: none;
+  flex-direction: column;
+  background-color: seashell;
+}
+.wrapper img{
+  height: 150px;
+  width: 100%;
+  background-blend-mode: multiply;
+}
+.wrapper h2{
+  padding: 0;
+  margin: 0;
+}
+.wrapper button{
+ 
+  height: 30px;
+  transition: left 0.3s ease-in-out;
+  background: transparent;
+  border-radius: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #333;
+  cursor: pointer;
+  float: right;
+}
+.wrapper button:hover {
+  background-color: antiquewhite;
+}
 #addtocalendar{
   position: absolute;
   left: -100px;
@@ -479,19 +520,46 @@ font-size: 0.78em;
   width: 100px;
   height: 100px;
 }
-#epg-time {
+#epg-time,#epg-days {
   display: none;
   padding: 0;
   margin: 0%;
   font-size: 20px ;
   position: sticky;
-  display: flex;
+ /* display: flex;*/
  /* top:71.5vh;*/
   width: 100%;
   padding: 0px;
   z-index: 10;
 }
+#epg-days {
+  display: none;
+  padding: 0;
+  margin: 0%;
+  font-size: 20px ;
+  position: sticky;
+ /* display: flex;*/
+ /* top:71.5vh;*/
+  width: 100%;
+  padding: 0px;
+  z-index: 10;
+  list-style: none;
+}
 
+#epg-days li{
+  padding:0 20px;
+  flex-wrap: wrap;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  color: black;
+  border-radius: 5px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  margin: 0 30px;
+}
+#epg-days li.active {
+  background-color:greenyellow;
+}
  
 
 .vjs-control-bar{
