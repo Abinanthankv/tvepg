@@ -423,14 +423,14 @@ font-size: 0.78em;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: white;
+ 
   padding: 10px 20px;
   border: 1px solid #ccc;
   z-index:  
  999;
   display: none;
   flex-direction: column;
-  background-color: seashell;
+  background-color:seashell;
 }
 .wrapper img{
   height: 150px;
@@ -452,9 +452,10 @@ font-size: 0.78em;
   color: #333;
   cursor: pointer;
   float: right;
+  background-color: rgb(155, 166, 219);
 }
 .wrapper button:hover {
-  background-color: antiquewhite;
+  background-color: rgb(206, 234, 162);
 }
 #addtocalendar{
   position: absolute;
