@@ -443,7 +443,7 @@ font-size: 0.78em;
 }
 .wrapper button{
  
-  height: 30px;
+  height: 60px;
   transition: left 0.3s ease-in-out;
   background: transparent;
   border-radius: 20px;
