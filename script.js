@@ -44,6 +44,7 @@ const toggleButton = document.getElementById("toggle-list-size");
 const timecontrol = document.querySelector(".vjs-time-control");
 const showTime = document.getElementById("show-time");
 const castInfo = document.getElementById("cast-info");
+const ratings = document.getElementById("ratings");
 const epgDays = document.getElementById("epg-days");
 let activeChannel;
 let filteredData;
@@ -378,6 +379,66 @@ function filtereditemlist() {
                       item.episode_desc;
                     // castInfo.innerHTML='🎭'+item.starCast;
                   }
+                 // console.log(foundlanguage)
+                 // console.log(foundgenere)
+                  if(foundlanguage==6)
+                  {
+                   // console.log("language")
+                    if(foundgenere==5||foundgenere==6)
+                    {
+                      
+                      getMovieInfo(item.showname)
+                      .then((data) => {
+                        if (data!=" ") {
+                          ratings.innerHTML="";
+                          channelLogo.src = data.poster;
+                         // console.log(data);
+                          console.log(data.rottenTomatoesScore)
+                          const imdbIcon = document.createElement("i");
+                          imdbIcon.classList.add("fa-brands", "fa-imdb");
+                          const ratingText = document.createTextNode(
+                            ` ${data.imdbRating}`
+                          ); // Add a space before the rating
+                        
+                          const imdbLink = document.createElement('a');
+                          imdbLink.href = `https://www.imdb.com/title/${data.imdbID}/`;
+                          imdbLink.textContent=` ${data.imdbRating}`
+                          imdbLink.target = '_blank'; 
+                          ratings.appendChild(imdbIcon);
+                        //  ratings.appendChild(ratingText);
+                          ratings.appendChild(imdbLink);
+                          if(data.rottenTomatoesScore!=" ")
+                          {
+                            const rottenTomatoesIcon = document.createElement("img");
+                            rottenTomatoesIcon.src=`https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Rotten_Tomatoes_alternative_logo.svg/216px-Rotten_Tomatoes_alternative_logo.svg.png?20180315205910`// Replace with your Rotten Tomatoes icon class
+                            const rottenTomatoesText = document.createTextNode(
+                             `${data.rottenTomatoesScore}`
+                            );
+                            ratings.appendChild(rottenTomatoesIcon);
+                            ratings.appendChild(rottenTomatoesText);
+                          }
+                          if(data.metaCritic!=" ")
+                          {
+                            const metacriticIcon = document.createElement("img");
+                            metacriticIcon.src=`https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Metacritic.svg/132px-Metacritic.svg.png?20150314054830`
+                            // Replace with your Metacritic icon class
+                            const metacriticText = document.createTextNode(
+                              `${data.metaCritic}`
+                            );
+                            ratings.appendChild(metacriticIcon);
+                            ratings.appendChild(metacriticText);
+
+                          }
+                          
+                         
+                          // Do something with the data, e.g., display it on a webpage
+                        }
+                      })
+                      .catch((error) => console.error(error));
+                    }
+
+                  }
+                 
                 }
               });
             }
@@ -643,7 +704,7 @@ function getEPGDataByApi(channelId) {
         if (count != 0) {
           const prev = document.createElement("li");
           prev.id = "timeshift";
-     
+
           var epgtime = document.getElementById("epg-time");
           epgtime.innerHTML = "";
           epgtime.style.display = "flex";
@@ -654,42 +715,40 @@ function getEPGDataByApi(channelId) {
             timeline.innerHTML = item;
             epgtime.appendChild(timeline);
           });
-          if((item.showtime <=currentTime ) )
-          {
+          if (item.showtime <= currentTime) {
             prev.textContent = item.showname;
             prev.style.width = item.duration * 12 + "px";
-            
-           
+
             epgul.appendChild(prev);
             prev.addEventListener("click", () => {
               const existingWrapper = document.querySelector(".wrapper");
               if (existingWrapper) {
-              existingWrapper.remove();
+                existingWrapper.remove();
               }
- 
+
               const wrapper = document.createElement("div");
               wrapper.classList.add("wrapper");
               // Create content for the wrapper based on the clicked item
               const img = document.createElement("img");
               const h2 = document.createElement("h2");
-              const span=document.createElement("span");
-              span.textContent=  "⌛" + item.showtime.slice(0, 5).toString() +" / " +item.endtime.slice(0, 5).toString();
+              const span = document.createElement("span");
+              span.textContent =
+                "⌛" +
+                item.showtime.slice(0, 5).toString() +
+                " / " +
+                item.endtime.slice(0, 5).toString();
               h2.textContent = ` ${item.showname}`;
               const p = document.createElement("p");
               if (item.episode_num === -1 || item.episode_desc === "") {
                 info = item.description;
-                
               } else {
                 info =
-                  "📺" +
-                  item.episode_num.toString() +
-                  ":" +
-                  item.episode_desc;
+                  "📺" + item.episode_num.toString() + ":" + item.episode_desc;
                 // castInfo.innerHTML='🎭'+item.starCast;
               }
               p.textContent = ` ${info}`;
               img.src = `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`;
-            
+
               wrapper.appendChild(img);
               wrapper.appendChild(h2);
               wrapper.appendChild(p);
@@ -705,7 +764,6 @@ function getEPGDataByApi(channelId) {
               });
               addclaendarButton.textContent = "Add to Calendar";
               addclaendarButton.addEventListener("click", () => {
-              
                 addToCalendar(
                   item.startEpoch,
                   item.endEpoch,
@@ -715,16 +773,14 @@ function getEPGDataByApi(channelId) {
               });
               wrapper.appendChild(addclaendarButton);
               wrapper.appendChild(closeButton);
-              
 
               document.body.appendChild(wrapper);
               wrapper.style.display = "flex";
             });
-          }
-          else{
+          } else {
             const future = document.createElement("li");
             const epgTime = document.createElement("li");
-           
+
             epgTime.id = "epgtime";
             future.id = "timeshift";
             const button = document.createElement("button");
@@ -737,32 +793,32 @@ function getEPGDataByApi(channelId) {
             future.addEventListener("click", () => {
               const existingWrapper = document.querySelector(".wrapper");
               if (existingWrapper) {
-              existingWrapper.remove();
+                existingWrapper.remove();
               }
- 
+
               const wrapper = document.createElement("div");
               wrapper.classList.add("wrapper");
               // Create content for the wrapper based on the clicked item
               const img = document.createElement("img");
               const h2 = document.createElement("h2");
-              const span=document.createElement("span");
-              span.textContent=  "⌛" + item.showtime.slice(0, 5).toString() +" / " +item.endtime.slice(0, 5).toString();
+              const span = document.createElement("span");
+              span.textContent =
+                "⌛" +
+                item.showtime.slice(0, 5).toString() +
+                " / " +
+                item.endtime.slice(0, 5).toString();
               h2.textContent = ` ${item.showname}`;
               const p = document.createElement("p");
               if (item.episode_num === -1 || item.episode_desc === "") {
                 info = item.description;
-                
               } else {
                 info =
-                  "📺" +
-                  item.episode_num.toString() +
-                  ":" +
-                  item.episode_desc;
+                  "📺" + item.episode_num.toString() + ":" + item.episode_desc;
                 // castInfo.innerHTML='🎭'+item.starCast;
               }
               p.textContent = ` ${info}`;
               img.src = `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`;
-            
+
               wrapper.appendChild(img);
               wrapper.appendChild(h2);
               wrapper.appendChild(p);
@@ -778,7 +834,6 @@ function getEPGDataByApi(channelId) {
               });
               addclaendarButton.textContent = "Add to Calendar";
               addclaendarButton.addEventListener("click", () => {
-              
                 addToCalendar(
                   item.startEpoch,
                   item.endEpoch,
@@ -788,21 +843,16 @@ function getEPGDataByApi(channelId) {
               });
               wrapper.appendChild(addclaendarButton);
               wrapper.appendChild(closeButton);
-              
 
               document.body.appendChild(wrapper);
               wrapper.style.display = "flex";
             });
 
-            
             epgul.appendChild(future);
-         
           }
-         
+
           // curr.insertAdjacentHTML( "beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`}>`);
-         
-        } 
-        else {
+        } else {
           var epgtime = document.getElementById("epg-time");
           epgtime.innerHTML = "";
           epgtime.style.display = "flex";
@@ -814,18 +864,17 @@ function getEPGDataByApi(channelId) {
             epgtime.appendChild(timeline);
           });
           if (item.showtime <= currentTime && currentTime < item.endtime) {
-           
-              curr.textContent = item.showname;
-              // curr.insertAdjacentHTML( "beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`}>`);
-              var duration = getRemainingTime(currentTime, item.endtime);
-              if (duration * 12 < 362) {
-                curr.style.width = 352 + "px";
-                //curr.style.paddingRight = duration * 10.4 + "px";
-              } else {
-                curr.style.width = duration * 12 + "px";
-              }
-              epgul.appendChild(curr);
-            
+            curr.textContent = item.showname;
+
+            // curr.insertAdjacentHTML( "beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodeThumbnail}`}>`);
+            var duration = getRemainingTime(currentTime, item.endtime);
+            if (duration * 12 < 362) {
+              curr.style.width = 352 + "px";
+              //curr.style.paddingRight = duration * 10.4 + "px";
+            } else {
+              curr.style.width = duration * 12 + "px";
+            }
+            epgul.appendChild(curr);
           }
           if (item.showtime > currentTime) {
             const future = document.createElement("li");
@@ -833,40 +882,40 @@ function getEPGDataByApi(channelId) {
             const nowTime = document.createElement("li");
             epgTime.id = "epgtime";
             future.id = "timeshift";
-         
+
             future.innerHTML = "";
             future.textContent = item.showname;
             // future.insertAdjacentHTML("beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`}>` );
             future.style.width = item.duration * 12 + "px";
             future.addEventListener("click", () => {
               const existingWrapper = document.querySelector(".wrapper");
-             if (existingWrapper) {
-             existingWrapper.remove();
-             }
+              if (existingWrapper) {
+                existingWrapper.remove();
+              }
 
               const wrapper = document.createElement("div");
               wrapper.classList.add("wrapper");
               // Create content for the wrapper based on the clicked item
               const img = document.createElement("img");
               const h2 = document.createElement("h2");
-              const span=document.createElement("span");
-              span.textContent=  "⌛" + item.showtime.slice(0, 5).toString() +" / " +item.endtime.slice(0, 5).toString();
+              const span = document.createElement("span");
+              span.textContent =
+                "⌛" +
+                item.showtime.slice(0, 5).toString() +
+                " / " +
+                item.endtime.slice(0, 5).toString();
               h2.textContent = ` ${item.showname}`;
               const p = document.createElement("p");
               if (item.episode_num === -1 || item.episode_desc === "") {
                 info = item.description;
-                
               } else {
                 info =
-                  "📺" +
-                  item.episode_num.toString() +
-                  ":" +
-                  item.episode_desc;
+                  "📺" + item.episode_num.toString() + ":" + item.episode_desc;
                 // castInfo.innerHTML='🎭'+item.starCast;
               }
               p.textContent = ` ${info}`;
               img.src = `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`;
-            
+
               wrapper.appendChild(img);
               wrapper.appendChild(h2);
               wrapper.appendChild(p);
@@ -882,7 +931,6 @@ function getEPGDataByApi(channelId) {
               });
               addclaendarButton.textContent = "Add to Calendar";
               addclaendarButton.addEventListener("click", () => {
-              
                 addToCalendar(
                   item.startEpoch,
                   item.endEpoch,
@@ -892,15 +940,12 @@ function getEPGDataByApi(channelId) {
               });
               wrapper.appendChild(addclaendarButton);
               wrapper.appendChild(closeButton);
-             
 
               document.body.appendChild(wrapper);
               wrapper.style.display = "flex";
             });
 
-        
             epgul.appendChild(future);
-            
           }
         }
       });
@@ -1120,3 +1165,54 @@ listItemscolor.forEach((item) => {
     this.classList.add("active");
   });
 });
+
+const apiKey = "738593f2"; // Replace with your actual API key
+
+async function getMovieInfo(title) {
+  const url = `http://www.omdbapi.com/?apikey=${apiKey}&t=${title}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.Response === "True") {
+      const imdbRating = data.imdbRating;
+      const imdbID=data.imdbID;
+      console.log(data);
+      var rottenTomatoesScore = ""; // Placeholder for Rotten Tomatoes
+      var metaCritic = "";
+      var poster = data.Poster;
+      if (data.Ratings && data.Ratings.length > 0) {
+        // Find the rating object with Source equal to 'Rotten Tomatoes'
+        const rottenTomatoesRating = data.Ratings.find(
+          (rating) => rating.Source === "Rotten Tomatoes"
+        );
+        const metaCriticRating = data.Ratings.find(
+          (rating) => rating.Source === "Metacritic"
+        );
+       
+
+        // If found, extract the value
+        if (rottenTomatoesRating) {
+          rottenTomatoesScore = rottenTomatoesRating.Value;
+        }
+        if (metaCriticRating) {
+          metaCritic = metaCriticRating.Value;
+        }
+      }
+      
+      console.log(`IMDb Rating: ${imdbRating}`);
+      console.log(`Rotten Tomatoes Score: ${rottenTomatoesScore}`);
+      console.log(`Meta critic Score: ${metaCritic}`);
+      return { imdbRating, rottenTomatoesScore, metaCritic, poster,imdbID };
+    } else {
+      console.error("Error fetching movie data:", data.Error);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return null;
+  }
+}
+
+// Example usage:
