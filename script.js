@@ -458,7 +458,7 @@ function filtereditemlist() {
           player.pause();
           if (item.id != "") {
             player.src({
-              src: `https://fundamental-ie-dish-sing.trycloudflare.com/app/live.php?id=${item.id}&e=.m3u`,
+              src: `https://earthquake-peripherals-inside-processed.trycloudflare.com/app/live.php?id=${item.id}&e=.m3u`,
 
               type: "application/vnd.apple.mpegURL",
             });
