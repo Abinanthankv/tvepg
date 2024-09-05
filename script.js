@@ -458,7 +458,7 @@ function filtereditemlist() {
           player.pause();
           if (item.id != "") {
             player.src({
-              src: `https://editorials-fill-ruled-sudden.trycloudflare.com/app/live.php?id=${item.id}&e=.m3u`,
+              src: `https://allinonereborn.com/jiotv.php?id=${item.id}&e=.m3u`,
 
               type: "application/vnd.apple.mpegURL",
             });
