@@ -458,7 +458,7 @@ function filtereditemlist() {
           player.pause();
           if (item.id != "") {
             player.src({
-              src: `https://allinonereborn.com/jiotv.php?id=${item.id}&e=.m3u`,
+              src: `https://luther-beautifully-banners-made.trycloudflare.com/live.php?id=${item.id}&key=JITENDRAUNATTI&e=.m3u8`,
 
               type: "application/vnd.apple.mpegURL",
             });
