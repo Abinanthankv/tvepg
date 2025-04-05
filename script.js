@@ -1,3 +1,39 @@
+// State management
+const state = {
+    activeChannel: null,
+    filteredData: null,
+    isShowHD: false,
+    isListExpanded: false,
+    nowspan: "",
+    starttime: "",
+    stoptime: "",
+    currtime: "",
+    rtdtime: "",
+    duration: "",
+    channelID: "",
+    currentPlayingProgram: "",
+    currentPlayingPrograminfo: "",
+    foundgenere: null,
+    foundlanguage: null,
+    timeoutId: null,
+    count: 0,
+    duration1: null,
+    remaining1: null,
+    showtimestart: null,
+    showtimeend: null,
+    channelname: "",
+    info: ""
+};
+
+// Update state with validation
+function updateState(newState) {
+    Object.entries(newState).forEach(([key, value]) => {
+        if (state.hasOwnProperty(key)) {
+            state[key] = value;
+        }
+    });
+}
+
 var player = videojs("myVideo", {
   playbackRates: [0.5, 1, 1.5, 2],
   responsive: true,
@@ -46,29 +82,7 @@ const showTime = document.getElementById("show-time");
 const castInfo = document.getElementById("cast-info");
 const ratings = document.getElementById("ratings");
 const epgDays = document.getElementById("epg-days");
-let activeChannel;
-let filteredData;
-let isShowHD = false;
-let isListExpanded = false;
-let nowspan = "";
-let starttime = "";
-let stoptime = "";
-let currtime = "";
-let rtdtime = "";
-let duration = "";
-var channelID = "";
-var currentPlayingProgram = "";
-var currentPlayingPrograminfo = "";
-let foundgenere;
-let foundlanguage;
-let timeoutId = null;
-var count = 0;
-let duration1 = null; // Initialize duration
-let remaining1 = null;
-let showtimestart = null;
-let showtimeend = null;
-let channelname = "";
-let info = "";
+
 function detectBrowserAndDeviceType() {
   const userAgent = navigator.userAgent;
   const isMobile =
@@ -128,40 +142,47 @@ function notifyUserForCorsExtension() {
   }
 }
 
-window.addEventListener("scroll", function () {
-  if (window.scrollY > 120) {
-    // Hide after 100px scroll
-    //  channelInfo.style.display = "none";
-    scrollfab.style.display = "block";
-    // channelInfo.style.behavior = "smooth";
-    // epgstyle.style.overflowX="auto"
-  } else {
-    scrollfab.style.display = "none";
-    // epgstyle.style.overflowX="scroll"
-    // channelInfo.style.display = "flex";
-    // channelInfo.style.behavior = "smooth";
-  }
-  if (window.scrollY > 450 || window.scrollX > 150) {
-    //  myVideo.style.display = "none";
-    //  myVideo.style.behavior = "smooth";
-    if (!document.pictureInPictureElement && !player.paused()) {
-      player.requestPictureInPicture();
-    }
-    if (document.pictureInPictureElement) {
-      // myVideo.style.display = "none";
-      // myVideo.style.behavior = "smooth";
+// Debounce function to prevent scroll event from firing too often
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Optimized scroll event listener
+window.addEventListener("scroll", debounce(function() {
+    if (window.scrollY > 120) {
+        scrollfab.style.display = "block";
     } else {
-      // myVideo.style.display = "flex";
-      // myVideo.style.behavior = "smooth";
+        scrollfab.style.display = "none";
     }
-  } else {
-    //  myVideo.style.display = "flex";
-    // myVideo.style.behavior = "smooth";
-    if (document.pictureInPictureElement && !player.paused()) {
-      player.exitPictureInPicture();
+    if (window.scrollY > 450 || window.scrollX > 150) {
+        //  myVideo.style.display = "none";
+        //  myVideo.style.behavior = "smooth";
+        if (!document.pictureInPictureElement && !player.paused()) {
+          player.requestPictureInPicture();
+        }
+        if (document.pictureInPictureElement) {
+          // myVideo.style.display = "none";
+          // myVideo.style.behavior = "smooth";
+        } else {
+          // myVideo.style.display = "flex";
+          // myVideo.style.behavior = "smooth";
+        }
+    } else {
+        //  myVideo.style.display = "flex";
+        // myVideo.style.behavior = "smooth";
+        if (document.pictureInPictureElement && !player.paused()) {
+          player.exitPictureInPicture();
+        }
     }
-  }
-});
+}, 150));
 
 const scrollToTopButton = document.getElementById("scroll-to-top");
 scrollToTopButton.addEventListener("click", () => {
@@ -195,7 +216,7 @@ function generateEPGList() {
   });
 }
 function nowtimewidth() {
-  if (!isListExpanded) {
+  if (!state.isListExpanded) {
     const id111 = jioepgtimeformat();
     const nowtime = convertTimeToHHMM(id111.toString());
     const id222 = generateTimeList(id111.toString());
@@ -215,18 +236,18 @@ async function apichannels() {
   )
     .then((response) => response.json())
     .then((data) => {
-      if (foundgenere == null && foundlanguage == null) {
+      if (state.foundgenere == null && state.foundlanguage == null) {
         const Array2 = data.result.map((channels) => ({
           id: channels.channel_id,
           name: channels.channel_name,
           logo: `https://jiotv.catchup.cdn.jio.com/dare_images/images/${channels.logoUrl}`,
         }));
         return Array2;
-      } else if (foundgenere != null && foundlanguage == null) {
+      } else if (state.foundgenere != null && state.foundlanguage == null) {
         const Array2 = data.result
           .filter(
             (channels) =>
-              channels.channelCategoryId.toString() === foundgenere.toString()
+              channels.channelCategoryId.toString() === state.foundgenere.toString()
           )
           .map((channels) => ({
             id: channels.channel_id,
@@ -234,11 +255,11 @@ async function apichannels() {
             logo: `https://jiotv.catchup.cdn.jio.com/dare_images/images/${channels.logoUrl}`,
           }));
         return Array2;
-      } else if (foundgenere == null && foundlanguage != null) {
+      } else if (state.foundgenere == null && state.foundlanguage != null) {
         const Array2 = data.result
           .filter(
             (channels) =>
-              channels.channelLanguageId.toString() === foundlanguage.toString()
+              channels.channelLanguageId.toString() === state.foundlanguage.toString()
           )
           .map((channels) => ({
             id: channels.channel_id,
@@ -251,8 +272,8 @@ async function apichannels() {
           .filter(
             (channels) =>
               channels.channelCategoryId.toString() ===
-                foundgenere.toString() &&
-              channels.channelLanguageId.toString() === foundlanguage.toString()
+                state.foundgenere.toString() &&
+              channels.channelLanguageId.toString() === state.foundlanguage.toString()
           )
           .map((channels) => ({
             id: channels.channel_id,
@@ -270,7 +291,7 @@ function checkAndCallFunction() {
   // filtereditemlist()
   if (minutes === 30 || minutes === 0) {
     // filtereditemlist();
-    if (activeChannel != null) {
+    if (state.activeChannel != null) {
       /* getduration(activeChannel).then((data) => {
     if (data) {
      /* player.duration = function () {
@@ -381,10 +402,10 @@ function filtereditemlist() {
                   }
                  // console.log(foundlanguage)
                  // console.log(foundgenere)
-                  if(foundlanguage==6)
+                  if(state.foundlanguage==6)
                   {
                    // console.log("language")
-                    if(foundgenere==5||foundgenere==6)
+                    if(state.foundgenere==5||state.foundgenere==6)
                     {
                       
                       getMovieInfo(item.showname)
@@ -446,7 +467,7 @@ function filtereditemlist() {
           videodata.style.display = "block";
           notifyUserForCorsExtension();
           const channelInfo = document.getElementById("channel-info");
-          channelID = item.id;
+          state.channelID = item.id;
           channelInfo.style.display = "flex";
           for (const channelItem of scrollChannel.children) {
             channelItem.style.backgroundColor = "";
@@ -454,11 +475,11 @@ function filtereditemlist() {
           // to change css style
           scrollchannelid.style.backgroundColor = "lightgreen";
 
-          activeChannel = item.id;
+          state.activeChannel = item.id;
           player.pause();
           if (item.id != "") {
             player.src({
-              src: `https://luther-beautifully-banners-made.trycloudflare.com/live.php?id=${item.id}&key=JITENDRAUNATTI&e=.m3u8`,
+              src: `https://allinonereborn.com/tata-tv40.php?id=12148`,
 
               type: "application/vnd.apple.mpegURL",
             });
@@ -473,13 +494,13 @@ function filtereditemlist() {
                   .el()
                   .querySelector("span");
                 timeDividerSpan.textContent =
-                  showtimestart.toString() + "/" + showtimeend.toString();
+                  state.showtimestart.toString() + "/" + state.showtimeend.toString();
                 showTime.innerHTML =
                   "⌛" +
-                  showtimestart.toString() +
+                  state.showtimestart.toString() +
                   " / " +
-                  showtimeend.toString();
-                console.log(showtimestart.slice(0, 5), showtimeend.slice(0, 5));
+                  state.showtimeend.toString();
+                console.log(state.showtimestart.slice(0, 5), state.showtimeend.slice(0, 5));
                 /* player.on('loadedmetadata', function() {
                   var duration1 = player.duration;
                   console.log(duration1);*/
@@ -503,6 +524,61 @@ function filtereditemlist() {
     }
   });
 }
+
+// Optimized DOM manipulation
+function updateChannelInfo(channel) {
+    const channelInfo = document.getElementById("channel-info");
+    if (!channelInfo) return;
+    
+    const fragment = document.createDocumentFragment();
+    
+    // Create elements and append to fragment
+    const channelName = document.createElement("h2");
+    channelName.textContent = channel.name;
+    fragment.appendChild(channelName);
+    
+    const channelLogo = document.createElement("img");
+    channelLogo.src = channel.logo;
+    fragment.appendChild(channelLogo);
+    
+    channelInfo.innerHTML = '';
+    channelInfo.appendChild(fragment);
+}
+
+// Optimized day list creation
+function createDayList() {
+    const daysOfWeek = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ];
+    const today = new Date();
+    const dayIndex = today.getDay();
+
+    const fragment = document.createDocumentFragment();
+    
+    for (let i = 0; i < 7; i++) {
+        const dayName = daysOfWeek[(dayIndex + i) % 7];
+        const listItem = document.createElement("li");
+        listItem.textContent = dayName === daysOfWeek[dayIndex] ? "Today" : dayName;
+        listItem.value = i;
+        
+        listItem.addEventListener("click", () => {
+            state.count = listItem.value;
+            filtereditemlist();
+            generateEPGList();
+        });
+        
+        fragment.appendChild(listItem);
+    }
+
+    return fragment;
+}
+
 const categories = {
   "Business News": "💼",
   Entertainment: "🍿",
@@ -568,7 +644,7 @@ filterCategory.addEventListener("change", () => {
     19: "Jio Darshan",
   };
   const selectedCategory = filterCategory.value;
-  foundgenere = getKeyByValue(genre_dict, selectedCategory);
+  state.foundgenere = getKeyByValue(genre_dict, selectedCategory);
   toggleButton.style.display = "block";
   resetview();
   filtereditemlist();
@@ -596,10 +672,10 @@ filterLanguage.addEventListener("change", () => {
   const selectedGroup = filterLanguage.value;
   const selectedCategory = filterCategory.value;
 
-  foundlanguage = getKeyByValue(language_dict, selectedGroup);
+  state.foundlanguage = getKeyByValue(language_dict, selectedGroup);
   toggleButton.style.display = "block";
   resetview();
-  filtereditemlist(filteredData);
+  filtereditemlist(state.filteredData);
   // generateEPGList(filteredData);
 });
 
@@ -610,7 +686,7 @@ toggleButton.addEventListener("click", function () {
   if (selectedGroup === null && selectedCategory === null) {
     alert("Please select any language to continue");
   }
-  if (isListExpanded) {
+  if (state.isListExpanded) {
     filtereditemlist();
     scrollChannel.classList.remove("channel-toggle");
     scrollChannel.classList.add("scroll-list");
@@ -636,13 +712,13 @@ toggleButton.addEventListener("click", function () {
     epgDays.style.display = "none";
   }
 
-  if (isListExpanded) {
+  if (state.isListExpanded) {
     toggleButton.textContent = "HIDE EPG";
   } else {
     toggleButton.textContent = "SHOW EPG";
   }
 
-  isListExpanded = !isListExpanded; // Toggle state for next click
+  state.isListExpanded = !state.isListExpanded; // Toggle state for next click
 });
 
 function resetview() {
@@ -655,7 +731,7 @@ function resetview() {
   scrollChannel.style.position = "relative";
   videodetails.style.position = "sticky";
   scrollChannel.style.zIndex = 0;
-  isListExpanded = "false";
+  state.isListExpanded = "false";
   toggleButton.textContent = "SHOW EPG";
   epgDays.style.display = "none";
 }
@@ -691,7 +767,7 @@ function getRemainingTime(starttime, stoptime) {
 }
 
 function getEPGDataByApi(channelId) {
-  const apiUrl = `https://jiotvapi.cdn.jio.com/apis/v1.3/getepg/get?offset=${count}&channel_id=${channelId}&langId=6`; // Replace with your API URL
+  const apiUrl = `https://jiotvapi.cdn.jio.com/apis/v1.3/getepg/get?offset=${state.count}&channel_id=${channelId}&langId=6`; // Replace with your API URL
   const epgul = document.getElementById(channelId);
 
   var currentTime = convertTimeToHHMMSS(jioepgtimeformat());
@@ -701,7 +777,7 @@ function getEPGDataByApi(channelId) {
   makeApiRequest(apiUrl).then((data) => {
     if (data) {
       data.epg.forEach((item) => {
-        if (count != 0) {
+        if (state.count != 0) {
           const prev = document.createElement("li");
           prev.id = "timeshift";
 
@@ -740,13 +816,13 @@ function getEPGDataByApi(channelId) {
               h2.textContent = ` ${item.showname}`;
               const p = document.createElement("p");
               if (item.episode_num === -1 || item.episode_desc === "") {
-                info = item.description;
+                state.info = item.description;
               } else {
-                info =
+                state.info =
                   "📺" + item.episode_num.toString() + ":" + item.episode_desc;
                 // castInfo.innerHTML='🎭'+item.starCast;
               }
-              p.textContent = ` ${info}`;
+              p.textContent = ` ${state.info}`;
               img.src = `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`;
 
               wrapper.appendChild(img);
@@ -768,7 +844,7 @@ function getEPGDataByApi(channelId) {
                   item.startEpoch,
                   item.endEpoch,
                   item.showname + " " + "@" + " " + item.channel_name,
-                  info
+                  state.info
                 );
               });
               wrapper.appendChild(addclaendarButton);
@@ -788,7 +864,7 @@ function getEPGDataByApi(channelId) {
             button.textContent = "📅" + "Add to Calendar";
             future.innerHTML = "";
             future.textContent = item.showname;
-            // future.insertAdjacentHTML("beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`}>` );
+            // future.insertAdjacentHTML( "beforeend", `<img src=${`https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`}>`);
             future.style.width = item.duration * 12 + "px";
             future.addEventListener("click", () => {
               const existingWrapper = document.querySelector(".wrapper");
@@ -810,13 +886,13 @@ function getEPGDataByApi(channelId) {
               h2.textContent = ` ${item.showname}`;
               const p = document.createElement("p");
               if (item.episode_num === -1 || item.episode_desc === "") {
-                info = item.description;
+                state.info = item.description;
               } else {
-                info =
+                state.info =
                   "📺" + item.episode_num.toString() + ":" + item.episode_desc;
                 // castInfo.innerHTML='🎭'+item.starCast;
               }
-              p.textContent = ` ${info}`;
+              p.textContent = ` ${state.info}`;
               img.src = `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`;
 
               wrapper.appendChild(img);
@@ -838,7 +914,7 @@ function getEPGDataByApi(channelId) {
                   item.startEpoch,
                   item.endEpoch,
                   item.showname + " " + "@" + " " + item.channel_name,
-                  info
+                  state.info
                 );
               });
               wrapper.appendChild(addclaendarButton);
@@ -907,13 +983,13 @@ function getEPGDataByApi(channelId) {
               h2.textContent = ` ${item.showname}`;
               const p = document.createElement("p");
               if (item.episode_num === -1 || item.episode_desc === "") {
-                info = item.description;
+                state.info = item.description;
               } else {
-                info =
+                state.info =
                   "📺" + item.episode_num.toString() + ":" + item.episode_desc;
                 // castInfo.innerHTML='🎭'+item.starCast;
               }
-              p.textContent = ` ${info}`;
+              p.textContent = ` ${state.info}`;
               img.src = `https://jiotv.catchup.cdn.jio.com/dare_images/shows/${item.episodePoster}`;
 
               wrapper.appendChild(img);
@@ -935,7 +1011,7 @@ function getEPGDataByApi(channelId) {
                   item.startEpoch,
                   item.endEpoch,
                   item.showname + " " + "@" + " " + item.channel_name,
-                  info
+                  state.info
                 );
               });
               wrapper.appendChild(addclaendarButton);
@@ -951,10 +1027,10 @@ function getEPGDataByApi(channelId) {
       });
     }
   });
-  return count;
+  return state.count;
 }
 function getduration(channelId) {
-  const apiUrl = `https://jiotvapi.cdn.jio.com/apis/v1.3/getepg/get?offset=${count}&channel_id=${channelId}&langId=6`; // Replace with your API URL
+  const apiUrl = `https://jiotvapi.cdn.jio.com/apis/v1.3/getepg/get?offset=${state.count}&channel_id=${channelId}&langId=6`; // Replace with your API URL
   var currentTime = convertTimeToHHMMSS(jioepgtimeformat());
 
   return makeApiRequest(apiUrl).then((data) => {
@@ -962,13 +1038,13 @@ function getduration(channelId) {
       data.epg.forEach((item) => {
         if (item.showtime <= currentTime && currentTime < item.endtime) {
           //duration = getRemainingTime(currentTime, item.endtime);
-          duration1 = item.duration;
-          remaining1 = getRemainingTime(currentTime, item.endtime);
-          showtimestart = item.showtime.slice(0, 5);
-          showtimeend = item.endtime.slice(0, 5);
+          state.duration1 = item.duration;
+          state.remaining1 = getRemainingTime(currentTime, item.endtime);
+          state.showtimestart = item.showtime.slice(0, 5);
+          state.showtimeend = item.endtime.slice(0, 5);
         }
       });
-      return duration1; // Return the duration found
+      return state.duration1; // Return the duration found
     }
     return null; // Return null if no data
   });
@@ -1080,18 +1156,31 @@ function calculateItemWidth(startTime, stopTime, totalWidth, totalDuration) {
   const itemWidth = (totalWidth / totalDuration) * durationMillis;
   return itemWidth;
 }
+
+// Cache for API responses
+const apiCache = new Map();
+
 async function makeApiRequest(url) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Network response was not ok: ${response.statusText}`);
+    if (apiCache.has(url)) {
+        return apiCache.get(url);
     }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error making API request:", error);
-    return null;
-  }
+    
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
+        const data = await response.json();
+        apiCache.set(url, data);
+        return data;
+    } catch (error) {
+        console.error("Error making API request:", error);
+        return null;
+    }
 }
 
 function addToCalendar(startTime, endTime, title, info) {
@@ -1111,43 +1200,36 @@ function addToCalendar(startTime, endTime, title, info) {
 }
 
 function createDayList() {
-  const daysOfWeek = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  const today = new Date();
-  const dayIndex = today.getDay();
+    const daysOfWeek = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ];
+    const today = new Date();
+    const dayIndex = today.getDay();
 
-  const dayList = [];
-  for (let i = 0; i < 7; i++) {
-    const dayName = daysOfWeek[(dayIndex + i) % 7];
-    const listItem = document.createElement("li");
-    listItem.textContent = dayName === daysOfWeek[dayIndex] ? "Today" : dayName;
+    const fragment = document.createDocumentFragment();
+    
+    for (let i = 0; i < 7; i++) {
+        const dayName = daysOfWeek[(dayIndex + i) % 7];
+        const listItem = document.createElement("li");
+        listItem.textContent = dayName === daysOfWeek[dayIndex] ? "Today" : dayName;
+        listItem.value = i;
+        
+        listItem.addEventListener("click", () => {
+            state.count = listItem.value;
+            filtereditemlist();
+            generateEPGList();
+        });
+        
+        fragment.appendChild(listItem);
+    }
 
-    // Assign value to list item
-    listItem.value = i;
-    // listItem.style.background="transparent"
-    listItem.addEventListener("click", () => {
-      const clickedDayValue = listItem.value;
-      count = clickedDayValue;
-
-      filtereditemlist();
-
-      generateEPGList();
-      // Do something with the clicked day value
-
-      // listItem.classList.add('active');
-    });
-
-    dayList.push(listItem);
-  }
-
-  return dayList;
+    return fragment;
 }
 
 const dayListContainer = document.getElementById("epg-days"); // Replace with your container ID
